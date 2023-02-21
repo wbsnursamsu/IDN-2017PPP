@@ -1,5 +1,5 @@
 ********************************************************************************
-*	Project			: Poverty Line Analysis
+*	Project			: PPP 2017 deflator
 *	Task			: SUSENAS Extracting Data for Consumption Module 2002
 *	Subtask			: -
 *	Input			: SUSENAS 2002 Consumption Module
@@ -86,12 +86,14 @@ cap log close
 	append using `sus02_42'
 
 	* cw
-	gen code11 = kode
-	destring code11, replace
+	gen code02 = kode
+	destring code02, replace
 	
-	merge m:m code11 using "$gdData/Crosswalk/consumption_module_crosswalk.dta", keepusing(code11 code15 code17 code18 composite)
+	merge m:1 code02 using "${gdTemp}/crosswalk-2002.dta", keepusing(code04 code05 code06 code15 code17 code18 item02 composite)
 	drop if _merge == 2
 	drop _merge
+    
+    gen item = item02
 	
 	* exppl
 	preserve 
@@ -110,7 +112,7 @@ cap log close
 	drop if composite == 1
 	rename (b1r1 b1r2) (provcode kabcode)
 	gen urban = (b1r5==1)
-	keep provcode urban kabcode urut mod kode q v c hhsize weind wert year
-	order year provcode urban kabcode urut mod kode q v c hhsize weind wert 
+	keep provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert year
+	order year provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert 
 	
 	save "$gdTemp/SUS_Mod02.dta", replace

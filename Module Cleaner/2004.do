@@ -86,14 +86,17 @@ cap log close
 	append using `sus04_42'
 
 	drop wert weind
+
 	* cw
-	gen code11 = kode
-	destring code11, replace
+	gen code04 = kode
+	destring code04, replace
 	
-	merge m:m code11 using "$gdData/Crosswalk/consumption_module_crosswalk.dta", keepusing(code11 code15 code17 code18 composite)
+	merge m:1 code04 using "${gdTemp}/crosswalk-2004.dta", keepusing(code02 code05 code06 code15 code17 code18 item04 composite)
 	drop if _merge == 2
 	drop _merge
-	
+    
+    gen item = item04
+		
 	* exppl
 	preserve 
 		use "$gdData/Exppl/exppl04.dta", clear
@@ -121,7 +124,7 @@ cap log close
 	gen urban = (b1r5=="1")
 	destring provcode, replace
 	destring kabcode, replace
-	keep provcode urban kabcode urut mod kode q v c hhsize weind wert year
-	order year provcode urban kabcode urut mod kode q v c hhsize weind wert 
+	keep provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert year
+	order year provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert 
 	
 	save "$gdTemp/SUS_Mod04.dta", replace

@@ -112,14 +112,15 @@ cap log close
 	* Obtain WERT from exppl
 	merge m:1 b1r1-b1r8 using "$gdData/Exppl/exppl10.dta", keepusing(wert) nogen
 	
-	gen code11 = kode
-	destring code11, replace
-
-	* Merge with food crosswalk data
+	* cw
+	gen code06 = kode
+	destring code06, replace
 	
-	merge m:m code11 using "$gdData/Crosswalk/consumption_module_crosswalk.dta", keepusing(code11 code15 code17 code18 composite)
+	merge m:1 code06 using "${gdTemp}/crosswalk-2006.dta", keepusing(code02 code04 code05 code15 code17 code18 item06 composite)
 	drop if _merge == 2
 	drop _merge
+    
+    gen item = item06
 	
 **** Save
 
@@ -128,8 +129,8 @@ cap log close
 	rename (b1r1 b1r2) (provcode kabcode)
 	gen urban = (b1r5==1)
 	label values provcode
-	keep provcode urban kabcode urut mod kode q v c hhsize weind wert year
-	order year provcode urban kabcode urut mod kode q v c hhsize weind wert 
+	keep provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert year
+	order year provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert 
 	save "$gdTemp/SUS_Mod10.dta", replace
 	
 	* if needed

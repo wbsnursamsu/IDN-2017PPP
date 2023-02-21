@@ -89,12 +89,14 @@ cap log close
 	drop weind wert
 
 	* cw
-	gen code11 = kode
-	destring code11, replace
+	gen code05 = kode
+	destring code05, replace
 	
-	merge m:m code11 using "$gdData/Crosswalk/consumption_module_crosswalk.dta", keepusing(code11 code15 code17 code18 composite)
+	merge m:1 code05 using "${gdTemp}/crosswalk-2005.dta", keepusing(code02 code04 code06 code15 code17 code18 item05 composite)
 	drop if _merge == 2
 	drop _merge
+    
+    gen item = item05
 	
 	* exppl
 	merge m:1 b1r1-b1r8 using "$gdData/Exppl/exppl05.dta", nogen
@@ -103,7 +105,7 @@ cap log close
 	rename (b1r1 b1r2) (provcode kabcode)
 	gen urban = (b1r5==1)
 	label values provcode
-	keep provcode urban kabcode urut mod kode q v c hhsize weind wert year
-	order year provcode urban kabcode urut mod kode q v c hhsize weind wert 
+	keep provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert year
+	order year provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert 
 	
 	save "$gdTemp/SUS_Mod05.dta", replace

@@ -1,9 +1,8 @@
 ********************************************************************************
-*	Project			: Poverty Line Analysis
-*	Task			: Run all do-files in the pipeline
-*	Subtask			: -
-*	Input			: -
-*	Note			: -
+*	Project			: 2017 PPP IPL SPATIAL DEFLATOR
+
+* CHECK DOFILE IN 05 and 06 and 08 FIRST TO AVOID PERIOD CUT !!!
+
 ********************************************************************************
 
 * Please run 00_1_Init.do first before executing this do-file.
@@ -26,8 +25,8 @@ do "$gdDo\05-laspeyres_spatial.do"
 **** Step 3: Reconstruct Poverty Lines using Laspeyres Spatial Index 
 do "$gdDo\06-povline_reconstruction.do"
 		
-**** Step 4: Running some Robustness Check on the index
-do "$gdDo\07-robustness_check.do"
+// **** Step 4: Running some Robustness Check on the index
+// do "$gdDo\07-robustness_check.do"
 		
 **** Step 5: Calibrating Spatial Laspeyres to match published poverty rate
 do "$gdDo\08-calibration.do"

@@ -110,14 +110,15 @@ cap log close
 	append using `mar15_42'
 	merge m:1 urut r101-r108 using `mar15_43', nogen
 	
+	* cw
 	gen code15 = kode
 	destring code15, replace
-
-	* Merge with food crosswalk data
 	
-	merge m:m code15 using "$gdData/Crosswalk/consumption_module_crosswalk.dta", keepusing(code11 code15 code17 code18 composite)
+	merge m:1 code15 using "${gdTemp}/crosswalk-2006.dta", keepusing(code02 code04 code05 code06 code17 code18 item15 composite)
 	drop if _merge == 2
 	drop _merge
+    
+    gen item = item15
 	
 **** Save
 
@@ -126,8 +127,8 @@ cap log close
 	destring r101, replace
 	rename (r101 r102) (provcode kabcode)
 	gen urban = (r105==1)
-	keep provcode urban kabcode urut mod kode q v c hhsize weind wert year
-	order year provcode urban kabcode urut mod kode q v c hhsize weind wert 
+	keep provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert year
+	order year provcode urban kabcode urut mod kode item q v c hhsize code02 code04 code05 code06 code15 code17 code18 weind wert 
 	save "$gdTemp/SUS_Mod15.dta", replace
 	
 	* if needed
