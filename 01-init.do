@@ -9,16 +9,17 @@
 **** Please change the following directories according to your local
 clear
 local suser = upper(c(username))
-* gdWF: Working Folders
-* PAOutputs: Outputs for Core Analytics (Rabia's shared folder)
 * gdData: Raw Datasets (EEAPV IDN Data Files)
 
 if "`suser'" == "WB594719" {
     ** User: Sam
-    local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
-    global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"
-} 
-else {
+//     local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
+//     global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"
+	** User: Sam Virtual (CLOSE THE PREVIOUS LOCAL)
+    local ldLocal "D:/wb594719/IDN-2017PPP"
+    global gdData "D:/wb594719/Data"	
+}
+else { 
 	display as error "Please specify your username in 01-init.do first."
 	error 1
 }
