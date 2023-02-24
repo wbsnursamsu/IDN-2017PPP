@@ -27,7 +27,7 @@ foreach y in 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 {
 	capture log close
 }
 
-foreach t=2002/2022 {
+forval t=2002/2022 {
 	if `t' == 2002 {
 		use "$gdTemp/Laspeyres_`t'_naturbanP0-ffe", clear
 	} 
