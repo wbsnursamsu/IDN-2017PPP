@@ -13,11 +13,14 @@ local suser = upper(c(username))
 
 if "`suser'" == "WB594719" {
     ** User: Sam
-//     local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
-//     global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"
-	** User: Sam Virtual (CLOSE THE PREVIOUS LOCAL)
-    local ldLocal "D:/wb594719/IDN-2017PPP"
-    global gdData "D:/wb594719/Data"	
+    capture: local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
+    if _rc!=0 {
+        local ldLocal "D:/wb594719/IDN-2017PPP"
+    }
+    capture: global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"    
+    if _rc!=0 {
+        global gdData "D:/wb594719/Data"
+    }
 }
 else { 
 	display as error "Please specify your username in 01-init.do first."
