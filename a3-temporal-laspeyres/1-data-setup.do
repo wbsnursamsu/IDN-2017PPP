@@ -50,10 +50,10 @@ foreach y in 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 {
     drop if _merge==2
     drop _merge
     
-    * drop unneeded item and categories
+    * drop unneeded item and categories (KEEPING ONLY FOOD, FUEL, ENERGY)
     drop if code_all==.
-    drop if persistentcat==""
-
+    drop if !inlist(persistentcat,"food","fuel","energy")
+    
     save "${gdTemp}/1-susenas-consumption-consistent-item-`t'.dta", replace
 }
 
