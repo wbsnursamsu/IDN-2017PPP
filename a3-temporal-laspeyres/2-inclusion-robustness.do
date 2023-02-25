@@ -42,14 +42,9 @@ collapse (sum) v, by(urban year code_all persistentcat)
 
 ** 1.1. For all items
 preserve
-    reshape wide v, i(urban year) j(code_all)
-    egen totalvalue = rowsum(v*)
-    levelsof v*, local(commval)
-    foreach v of local commval {
-        gen sh_`v' = `v'/totalvalue
-    }
-    keep sh_v* urban year
-    reshape long sh_v, i(urban year) j(code_all)
+    bys urban year: egen totalvalue = total(v)
+    gen sh_v = v/totalvalue
+    keep sh_v urban year code_all
 
     ** Define threshold based on average of all years.
     collapse (mean) sh_v, by(urban code_all)
@@ -67,14 +62,9 @@ restore
 ** 1.2. For food only
 preserve
     keep if persistentcat=="food"
-    reshape wide v, i(urban year) j(code_all)
-    egen totalvalue = rowsum(v*)
-    levelsof v*, local(commval)
-    foreach v of local commval {
-        gen sh_`v' = `v'/totalvalue
-    }
-    keep sh_v* urban year
-    reshape long sh_v, i(urban year) j(code_all)
+    bys urban year: egen totalvalue = total(v)
+    gen sh_v = v/totalvalue
+    keep sh_v urban year code_all
 
     ** Define threshold based on average of all years.
     collapse (mean) sh_v, by(urban code_all)
@@ -92,14 +82,9 @@ restore
 ** 1.3. For fuel + energy only
 preserve
     keep if (persistentcat=="fuel" | persistentcat=="energy")
-    reshape wide v, i(urban year) j(code_all)
-    egen totalvalue = rowsum(v*)
-    levelsof v*, local(commval)
-    foreach v of local commval {
-        gen sh_`v' = `v'/totalvalue
-    }
-    keep sh_v* urban year
-    reshape long sh_v, i(urban year) j(code_all)
+    bys urban year: egen totalvalue = total(v)
+    gen sh_v = v/totalvalue
+    keep sh_v urban year code_all
 
     ** Define threshold based on average of all years.
     collapse (mean) sh_v, by(urban code_all)
