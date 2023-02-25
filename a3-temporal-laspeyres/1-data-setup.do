@@ -44,7 +44,7 @@ foreach y in 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 {
     local t = 2000+`y'
     
     *TEST: Put sample*
-    sample 20
+    *sample 20
     
     merge m:1 code02 code04 code05 code06 code15 code17 code18 using "${gdTemp}/consumption-module-crosswalk-2002-2022.dta", keepusing(code_all allcategories persistentitem persistentcat)
     drop if _merge==2
@@ -58,13 +58,11 @@ foreach y in 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 {
 }
 
 *** Data setup for SUSENAS consumption all year
-forval t=2002/2022 {
-    if `t'==2002 {
-        use "${gdTemp}/1-susenas-consumption-consistent-item-2002.dta", clear
-    }
-    else {
-        append using "${gdTemp}/1-susenas-consumption-consistent-item-2002.dta"
-        save "${gdTemp}/1-susenas-consumption-consistent-item-all-year.dta", replace
-    }    
+use "${gdTemp}/1-susenas-consumption-consistent-item-2002.dta", clear
+
+forval t=2003/2022 {
+	append using "${gdTemp}/1-susenas-consumption-consistent-item-`t'.dta"
 }
+
+save "${gdTemp}/1-susenas-consumption-consistent-item-all-year.dta", replace
 
