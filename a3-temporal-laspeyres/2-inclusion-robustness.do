@@ -25,33 +25,103 @@ save "${gdTemp}/2-0-p0-unit-price.dta", replace
 
 ********************************************************************************
 
+*** SET THRESHOLD HERE
+** Consumption share threshold (default 1% ~ 0.01)
+local tshare = 0.01
+
+** Transaction threshold (default 1% ~ 0.01)
+local ttrans = 0.01
+
+********************************************************************************
+
 *** 1. Check whether items consumed all years by nat urban rural (share is 0 - 1)
 ***     a. Inclusion error of share depends on the average share over years
-** For all items
-use "{gdTemp}/2-0-p1-unit-price.dta", clear
+use "${gdTemp}/2-0-p1-unit-price.dta", clear
 replace v = 0 if v==.
+collapse (sum) v, by(urban year code_all persistentcat)
 
-collapse (sum) v, by(urban year code_all)
-reshape wide v, i(urban year) j(code_all)
-egen totalvalue = rowsum(v*)
-levelsof v*, local(commval)
-foreach v of local commval {
-    gen sh_`v' = `v'/totalvalue
-}
-keep sh_v* urban year
-reshape long sh_v, i(urban year) j(code_all)
+** 1.1. For all items
+preserve
+    reshape wide v, i(urban year) j(code_all)
+    egen totalvalue = rowsum(v*)
+    levelsof v*, local(commval)
+    foreach v of local commval {
+        gen sh_`v' = `v'/totalvalue
+    }
+    keep sh_v* urban year
+    reshape long sh_v, i(urban year) j(code_all)
 
-** Define threshold based on average of all years.
-collapse (mean) sh_v, by(urban code_all)
+    ** Define threshold based on average of all years.
+    collapse (mean) sh_v, by(urban code_all)
 
-* >>>> Exclude below 1% share. Change 1% here if want to change threshold <<<<
-gen inclusionshare = (sh_v>=0.01)
+    * >>>> Exclude below 1% share. Change 1% here if want to change threshold <<<<
+    gen inclusionshare = (sh_v>=`tshare')
 
-di "Inclusion based on consumption share:"
-table (code_all) (urban), stat(mean inclusionshare)
+    di "Inclusion based on consumption share:"
+    table (code_all) (urban), stat(mean inclusionshare)
 
-keep urban code_all inclusionshare
-save "${gdTemp}/2-1-inclusion-share.dta", replace
+    keep urban code_all inclusionshare
+    save "${gdTemp}/2-1-inclusion-share.dta", replace
+restore
+
+** 1.2. For food only
+preserve
+    keep if persistentcat=="food"
+    reshape wide v, i(urban year) j(code_all)
+    egen totalvalue = rowsum(v*)
+    levelsof v*, local(commval)
+    foreach v of local commval {
+        gen sh_`v' = `v'/totalvalue
+    }
+    keep sh_v* urban year
+    reshape long sh_v, i(urban year) j(code_all)
+
+    ** Define threshold based on average of all years.
+    collapse (mean) sh_v, by(urban code_all)
+
+    * >>>> Exclude below 1% share. Change 1% here if want to change threshold <<<<
+    gen inclusionshare_food = (sh_v>=`tshare')
+
+    di "Inclusion based on consumption share:"
+    table (code_all) (urban), stat(mean inclusionshare_food)
+
+    keep urban code_all inclusionshare_food
+    save "${gdTemp}/2-1-inclusion-share-food.dta", replace
+restore
+
+** 1.3. For fuel + energy only
+preserve
+    keep if (persistentcat=="fuel" | persistentcat=="energy")
+    reshape wide v, i(urban year) j(code_all)
+    egen totalvalue = rowsum(v*)
+    levelsof v*, local(commval)
+    foreach v of local commval {
+        gen sh_`v' = `v'/totalvalue
+    }
+    keep sh_v* urban year
+    reshape long sh_v, i(urban year) j(code_all)
+
+    ** Define threshold based on average of all years.
+    collapse (mean) sh_v, by(urban code_all)
+
+    * >>>> Exclude below 1% share. Change 1% here if want to change threshold <<<<
+    gen inclusionshare_fe = (sh_v>=`tshare')
+
+    di "Inclusion based on consumption share:"
+    table (code_all) (urban), stat(mean inclusionshare_fe)
+
+    keep urban code_all inclusionshare_fe
+    save "${gdTemp}/2-1-inclusion-share-fe.dta", replace
+restore
+
+*** COMPILE ALL
+use "${gdTemp}/2-1-inclusion-share.dta", clear
+merge 1:1 urban code_all using "${gdTemp}/2-1-inclusion-share-food.dta"
+drop _merge
+merge 1:1 urban code_all using "${gdTemp}/2-1-inclusion-share-fe.dta"
+drop _merge
+
+save "${gdTemp}/2-1-inclusion-share-all.dta", replace
 
 ********************************************************************************
 
@@ -96,7 +166,7 @@ egen minobs = rowmin(obs*)
 egen minshare = mintransaction/minobs
 
 * >>>> Exclude below 1% share. Change 1% here if want to change threshold <<<<
-gen inclusiontransaction = (minshare>=0.01)
+gen inclusiontransaction = (minshare>=`ttrans')
 
 di "Inclusion based on transaction number:"
 table (urban) (code_all), stat(mean inclusiontransaction)
@@ -107,11 +177,13 @@ save "${gdTemp}/2-1-inclusion-transaction.dta", replace
 ********************************************************************************
 
 *** 5. Combine inclusion and generate inclusion of commodities included
-use "${gdTemp}/2-1-inclusion-share.dta", clear
+use "${gdTemp}/2-1-inclusion-share-all.dta", clear
 merge m:1 urban using "${gdTemp}/2-1-inclusion-trend.dta",
 drop _merge
 merge 1:1 urban code_all using "${gdTemp}/2-1-inclusion-transaction.dta"
 drop _merge
 
-gen inclusion_all = (inclusionshare==1 & inclusiontrend==1 & inclusiontransaction==1)
+gen inclusion_all_ffe = (inclusionshare==1 & inclusiontrend==1 & inclusiontransaction==1)
+gen inclusion_all_f = (inclusionshare_food==1 & inclusiontrend==1 & inclusiontransaction==1)
+gen inclusion_all_fe = (inclusionshare_fe==1 & inclusiontrend==1 & inclusiontransaction==1)
 save "${gdTemp}/2-1-inclusion-all.dta", replace
