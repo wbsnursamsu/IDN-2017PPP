@@ -1,5 +1,8 @@
 clear all
 set more off
+cap log close
+log using "${gdLog}/99-a3-temporal-index-comparison.dta"
+
 
 *** CPI comparison
 
