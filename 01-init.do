@@ -13,10 +13,10 @@ local suser = upper(c(username))
 
 if "`suser'" == "WB594719" {
     ** User: Sam
-//     local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
-	local ldLocal "D:/wb594719/IDN-2017PPP"
-//     global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"    
-	global gdData "D:/wb594719/Data"
+    local ldLocal "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP"
+// 	local ldLocal "D:/wb594719/IDN-2017PPP"
+    global gdData "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents"    
+// 	global gdData "D:/wb594719/Data"
 }
 else { 
 	display as error "Please specify your username in 01-init.do first."
