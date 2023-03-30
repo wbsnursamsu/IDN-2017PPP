@@ -136,9 +136,6 @@ label values region2 region2
 merge m:1 year using "$gdData/CPI/CPI International Povrate - Reno 2017ppp.dta"
 drop _merge
 
-**# Bookmark #3
-drop if !inlist(year,2002,2006,2010,2014,2018,2022)
-
 save "${gdTemp}/susenas-combine-2002-2022.dta", replace	
     
 **** Merge with new spatial deflator 
