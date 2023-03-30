@@ -15,13 +15,13 @@ cap log close
 log using "${gdLog}/2-inclusion-robustness.txt", replace
 
 *** Set unit price data for all year (p1)
-use "${gdTemp}/Sample/1-susenas-consumption-consistent-item-all-year.dta", clear
+use "${gdTemp}/1-susenas-consumption-consistent-item-all-year.dta", clear
 keep year provcode urban urut persistentcat code_all q v weind wert 
 gen p1 = v/q
 save "${gdTemp}/2-0-p1-unit-price.dta", replace
 
 *** Set unit price data for 2017 (p0)
-use "${gdTemp}/Sample/1-susenas-consumption-consistent-item-2017.dta", clear
+use "${gdTemp}/1-susenas-consumption-consistent-item-2017.dta", clear
 keep year provcode urban urut persistentcat code_all q v weind wert 
 gen p0 = v/q
 save "${gdTemp}/2-0-p0-unit-price.dta", replace
