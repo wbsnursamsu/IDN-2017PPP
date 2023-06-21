@@ -54,9 +54,16 @@ label values urban r105
 
 label values provcode r101
 
-replace index=1.95 if index>=2
+** Graph for spatial index
+* urban
+graph dot index if urban==1, over(provcode)
+graph export "${gdOutput}/Graphs/spatial index-avg-urban.png", replace
+* rural
+graph dot index if urban==0, over(provcode)
+graph export "${gdOutput}/Graphs/spatial index-avg-rural.png", replace
 
 ** Graph 
+replace index=1.95 if index>=2
 twoway line index year if urban==1, by(provcode) legend(size(small)) yscale(r(0.5 (0.5) 2)) xlabel(2002 (4) 2022)
 graph export "${gdOutput}/Graphs/spatial index - urban.png", replace
 twoway line index year if urban==0, by(provcode) legend(size(small)) yscale(r(0.5 (0.5) 2)) xlabel(2002 (4) 2022)
@@ -117,9 +124,16 @@ label values urban r105
 
 label values provcode r101
 
-replace index=1.95 if index>=2
+** Graph for spatial index
+* urban
+graph dot index if urban==1, over(provcode)
+graph export "${gdOutput}/Graphs-food-fuel-energy/spatial index-avg-urban.png", replace
+* rural
+graph dot index if urban==0, over(provcode)
+graph export "${gdOutput}/Graphs-food-fuel-energy/spatial index-avg-rural.png", replace
 
 ** Graph 
+replace index=1.95 if index>=2
 twoway line index year if urban==1, by(provcode) legend(size(small)) yscale(r(0.5 (0.5) 2)) xlabel(2002 (4) 2022)
 graph export "${gdOutput}/Graphs-food-fuel-energy/spatial index - urban.png", replace
 twoway line index year if urban==0, by(provcode) legend(size(small)) yscale(r(0.5 (0.5) 2)) xlabel(2002 (4) 2022)

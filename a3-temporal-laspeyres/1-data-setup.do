@@ -10,10 +10,11 @@ set more off
 use "${gdData}/Crosswalk/consumption_module_crosswalk_cat.dta", clear
 
 ** Decide which commodity codes that are persistent over time 
-gen persistentitem = !inlist("",item02,item04,item05,item06,item15,item17,item18)
+gen persistentitem = !inlist("",item02,item04,item05,item06,item15,item17,item18,item22)
 
 ** Define categories for all items
-gen allcategories = item18
+gen allcategories = item22
+replace allcategories = item18 if missing(allcategories)
 replace allcategories = item17 if missing(allcategories)
 replace allcategories = item15 if missing(allcategories)
 replace allcategories = item06 if missing(allcategories)
