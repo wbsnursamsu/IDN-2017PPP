@@ -2,7 +2,7 @@
 	* REGIONAL DEFLATOR 
 	*----------------------------------------------------------------------*
 set trace on
-foreach t in 02 06 10 14 18 22 {
+foreach t in 22 {
 	use "${gdOutput}/SUS_Mod`t'.dta", clear
     keep if inlist(item,"food")
     
@@ -68,7 +68,7 @@ foreach t in 02 06 10 14 18 22 {
 		keep if pi_hh !=. & qpurch !=.
         
         * Save if needed
-        keep hhid region urban popw code unit qpurch epurch purch uv_hh uv_str uv_reg uv_urb uv_nat fr pi_hh
+        keep hhid region urban popw code unit qpurch epurch uv_hh uv_str uv_reg uv_urb uv_nat fr pi_hh
         save "${gdTemp}/99-wdfdat-paache-`t'.dta", replace
 //        
 // 		collapse (sum) pi_hh qpurch [weight = popw], by(hhid code unit region urban) 

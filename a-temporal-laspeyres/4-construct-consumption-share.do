@@ -9,7 +9,7 @@
 clear 
 set more off
 cap log close
-log using "${gdLog}/a3-0-4-construct-unit-price.txt", replace
+log using "${gdLog}/a3-0-4-construct-weights.txt", replace
 
 ********************************************************************************
 ***                                                                          ***
