@@ -26,12 +26,22 @@ if "`suser'" == "WB594719" {
     confirmdir "C:/Users/wb594719/OneDrive - WBG/Documents/GitHub/IDN-2017PPP"
     if _rc==0 {
         local ldLocal "C:/Users/wb594719/OneDrive - WBG/Documents/GitHub/IDN-2017PPP"
-        global gdData "C:/Users/wb594719/OneDrive - WBG/EEAPV IDN Documents"            
+        global gdData "C:/Users/wb594719/OneDrive - WBG/EEAPV IDN Documents"         
+        global gdCrsw "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/crosswalk"
+        global gdPric "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/price-survey"        
+        global gdCons "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-cons" 
+        global gdSush "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-hh"
+        global gdExpp "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-exppl"        
     }
     else {
         local ldLocal "D:/wb594719/IDN-2017PPP"
         global gdData "D:/wb594719/Data"        
-    }
+        global gdCrsw "D:/wb594719/crosswalk"                 
+        global gdPric "D:/wb594719/price-survey"
+        global gdCons "D:/wb594719/susenas-pipeline-cons"         
+        global gdSush "D:/wb594719/susenas-pipeline-hh"
+        global gdExpp "D:/wb594719/susenas-pipeline-exppl"        
+        }
     ** Others: fill here
 }
 else { 

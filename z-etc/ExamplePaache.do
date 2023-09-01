@@ -58,7 +58,7 @@
 		gen    pi_hh = (uv_nat/uv_str) * qpurch                     
 		keep if pi_hh !=. & qpurch !=.
 
-		collapse (sum) pi_hh qpurch [weight = popw], by(hhid code unit region urban) 
+		collapse (sum) pi_hh qpurch [weight = popw], by(hhid region urban) 
 		gen rdef = qpurch/pi_hh 		     
 		drop if rdef==0 | rdef==. 
 	
