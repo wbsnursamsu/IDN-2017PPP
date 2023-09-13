@@ -1,9 +1,11 @@
 
 
 clear all
-set trace on
+set trace off
 	
-forval t=2019/2021 {
+forval t=2019/2021 {        
+    log using "${gdLog}/rent-`t'.dta", replace
+    
     use "${gdCons}/sus-cm-mar-`t'-full.dta", clear
     keep if inlist(ditem_all,"rent")            // rent only for rent price index 
     drop if provcode==77
@@ -35,8 +37,8 @@ forval t=2019/2021 {
             replace floor_type=1 if id==1
             
             reg rent house_area i.elec_type i.sani_type i.disp_type ///
-                i.hcert_type i.roof_type i.wall_type i.floor_type i.areacode [w=popw], ro 
-            
+                i.hcert_type i.roof_type i.wall_type i.floor_type i.provcode i.urban [w=popw], ro 
+                            
             predict prent
             drop if id==0
             keep urut prov rege kode prent
@@ -54,9 +56,12 @@ forval t=2019/2021 {
         la def hstat 1 "Own" 2 "Rent" 3 "Others"
         la val hstat hstat
         
+    * save for deflator !! 
+        save "${gdTemp}/rent-predict-`t'-2.dta", replace
+        
     * replace unit to 1 (unit has wrong entry as housing status)
         replace q = 1 if ditem_all=="rent"      // assuming all housing quantity is 1
-        
+    
     * replace rent to higher aggregation (rent is monthly)
         preserve 
             collapse (median) rent_1=rent prent_1=prent [w=popw], by(urban prov rege) // regency
@@ -75,16 +80,16 @@ forval t=2019/2021 {
             tempfile rent4
             save `rent4', replace
         restore, preserve 
-            collapse (median) rent_5=rent prent_5=prent [w=popw]                      // REF
+            collapse (median) rent_5=rent prent_5=prent [w=popw], by(year)            // REF
             tempfile rent5
             save `rent5', replace 
         restore
         
-        merge m:1 code urban prov rege using `rent1', nogen
-        merge m:1 code urban prov using `rent2', nogen
-        merge m:1 code prov using `rent3', nogen
-        merge m:1 code urban using `rent4', nogen
-        merge m:1 code using `rent5', nogen
+        merge m:1 urban prov rege using `rent1', nogen
+        merge m:1 urban prov using `rent2', nogen
+        merge m:1 prov using `rent3', nogen
+        merge m:1 urban using `rent4', nogen
+        merge m:1 year using `rent5', nogen
         
         forval j=1/5 {
             replace rent = rent_`j' if rent==.
@@ -99,17 +104,60 @@ forval t=2019/2021 {
         g prent_pi = prent/prent_nat * q
         
     * collapse to prov urban
-        collapse (median) rent_pi prent_pi [w=popw], by(prov urban)
+        collapse (median) rent_pi prent_pi [w=popw], by(year prov urban)
         
     * save
-        save "${gdOutput}/rent-price-`t'.dta", replace
-       
-}     
+        save "${gdOutput}/rent-price-`t'-2.dta", replace
+    
+    log close
+    }     
 
-use "${gdOutput}/rent-price-2019.dta", clear
-gen year=2019
+use "${gdOutput}/rent-price-2019-2.dta", clear
 forval t=2020/2021 {
-    append using "${gdOUtput}/rent-price`t'.dta"
-    replace year=`t' if missing(year)
+    append using "${gdOutput}/rent-price-`t'-2.dta"
     }
-save "${gdOutput}/rent-price-all.dta", replace
+
+gen provname = "Nanggroe Aceh Darussalam" if prov==11
+    replace provname = "Nanggroe Aceh Darussalam"       if prov==11	
+    replace provname = "Sumatera Utara"                 if prov==12	
+    replace provname = "Sumatera Barat"                 if prov==13	
+    replace provname = "Riau"                           if prov==14	
+    replace provname = "Jambi"                          if prov==15	
+    replace provname = "Sumatera Selatan"               if prov==16	
+    replace provname = "Bengkulu"                       if prov==17	
+    replace provname = "Lampung"                        if prov==18	
+    replace provname = "Kep. Bangka Belitung"           if prov==19	
+    replace provname = "Kep. Riau"                      if prov==21	
+    replace provname = "DKI Jakarta"                    if prov==31	
+    replace provname = "Jawa Barat"                     if prov==32	
+    replace provname = "Jawa Tengah"                    if prov==33	
+    replace provname = "DI Yogyakarta"                  if prov==34	
+    replace provname = "Jawa Timur"                     if prov==35	
+    replace provname = "Banten"                         if prov==36	
+    replace provname = "Bali"                           if prov==51	
+    replace provname = "Nusa Tenggara Barat"            if prov==52	
+    replace provname = "Nusa Tenggara Timur"            if prov==53	
+    replace provname = "Kalimantan Barat"               if prov==61	
+    replace provname = "Kalimantan Tengah"              if prov==62	
+    replace provname = "Kalimantan Selatan"             if prov==63	
+    replace provname = "Kalimantan Timur"               if prov==64	
+    replace provname = "Kalimantan Utara"               if prov==65 
+    replace provname = "Sulawesi Utara"                 if prov==71	
+    replace provname = "Sulawesi Tengah"                if prov==72	
+    replace provname = "Sulawesi Selatan"               if prov==73	
+    replace provname = "Sulawesi Tenggara"              if prov==74	
+    replace provname = "Gorontalo"                      if prov==75	
+    replace provname = "Sulawesi Barat"                 if prov==76	
+    replace provname = "Maluku"                         if prov==81	
+    replace provname = "Maluku Utara"                   if prov==82	
+    replace provname = "Papua Barat"                    if prov==91	
+    replace provname = "Papua"                          if prov==94	    
+
+tostring prov, replace
+gen provcode = prov+" "+provname
+destring prov, replace
+sort year prov provname provcode urban rent_pi prent_pi
+order year prov provname provcode urban rent_pi prent_pi
+
+save "${gdOutput}/rent-price-all-2.dta", replace
+export excel using "${gdOutput}/rent-price-all-2.xls", firstrow(variables) replace

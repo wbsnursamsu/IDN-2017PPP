@@ -10,10 +10,10 @@
     // merge with spatial deflator
     rename provcode prov
     rename kabcode rege
-    merge m:1 year prov urban using "${gdOutput}/spatial-index-stratum.dta"
+    merge m:1 year prov urban using "${gdOutput}/spatial-index-stratum-2.dta"
         drop if _merge==2
         drop _merge
-    merge m:1 year prov rege urban using "${gdOutput}/spatial-index-regency.dta"
+    merge m:1 year prov rege urban using "${gdOutput}/spatial-index-regency-2.dta"
         drop if _merge==2
         drop _merge
         
@@ -63,6 +63,10 @@ gen provname = "Nanggroe Aceh Darussalam" if prov==11
     replace provname = "Papua Barat"                    if prov==91	
     replace provname = "Papua"                          if prov==94	
 
+tostring prov, replace    
+gen provcode = prov+" "+provname 
+destring prov, replace 
+ 
 * original pov rate
     gen poor_npl = pcexp<povline
     gen poor_ipl215 = (rdpcexp_ppp2017)<2.15       // LIC
@@ -74,177 +78,99 @@ gen provname = "Nanggroe Aceh Darussalam" if prov==11
     gen poor_ipl215_str1 = (rdpcexp_ppp2017/pdef_re_fo_str)<2.15   // LIC - Food only
     gen poor_ipl215_str2 = (rdpcexp_ppp2017/pdef_re_ps_str)<2.15   // LIC - Price survey    
     gen poor_ipl215_str3 = (rdpcexp_ppp2017/pdef_re_mx_str)<2.15   // LIC - Combined HH & Price survey
-
+    gen poor_ipl215_str4 = (rdpcexp_ppp2017/pdef_re_wr_str)<2.15   // LIC - Combined HH & Price survey w rent
+    
     gen poor_ipl365_str1 = (rdpcexp_ppp2017/pdef_re_fo_str)<3.65   // LMIC - Food only
     gen poor_ipl365_str2 = (rdpcexp_ppp2017/pdef_re_ps_str)<3.65   // LMIC - Price survey    
     gen poor_ipl365_str3 = (rdpcexp_ppp2017/pdef_re_mx_str)<3.65   // LMIC - Combined HH & Price survey
-
+    gen poor_ipl365_str4 = (rdpcexp_ppp2017/pdef_re_wr_str)<3.65   // LMIC - Combined HH & Price survey w rent
+    
     gen poor_ipl685_str1 = (rdpcexp_ppp2017/pdef_re_fo_str)<6.85   // UMIC - Food only
     gen poor_ipl685_str2 = (rdpcexp_ppp2017/pdef_re_ps_str)<6.85   // UMIC - Price survey    
     gen poor_ipl685_str3 = (rdpcexp_ppp2017/pdef_re_mx_str)<6.85   // UMIC - Combined HH & Price survey
-
+    gen poor_ipl685_str4 = (rdpcexp_ppp2017/pdef_re_wr_str)<6.85   // UMIC - Combined HH & Price survey w rent
+    
     // regency
     gen poor_ipl215_reg1 = (rdpcexp_ppp2017/pdef_re_fo_reg)<2.15   // LIC - Food only
     gen poor_ipl215_reg2 = (rdpcexp_ppp2017/pdef_re_ps_reg)<2.15   // LIC - Price survey    
     gen poor_ipl215_reg3 = (rdpcexp_ppp2017/pdef_re_mx_reg)<2.15   // LIC - Combined HH & Price survey
-
+    gen poor_ipl215_reg4 = (rdpcexp_ppp2017/pdef_re_wr_reg)<2.15   // LIC - Combined HH & Price survey w rent
+    
     gen poor_ipl365_reg1 = (rdpcexp_ppp2017/pdef_re_fo_reg)<3.65   // LMIC - Food only
     gen poor_ipl365_reg2 = (rdpcexp_ppp2017/pdef_re_ps_reg)<3.65   // LMIC - Price survey    
     gen poor_ipl365_reg3 = (rdpcexp_ppp2017/pdef_re_mx_reg)<3.65   // LMIC - Combined HH & Price survey
-
+    gen poor_ipl365_reg4 = (rdpcexp_ppp2017/pdef_re_wr_reg)<3.65   // LMIC - Combined HH & Price survey w rent
+    
     gen poor_ipl685_reg1 = (rdpcexp_ppp2017/pdef_re_fo_reg)<6.85   // UMIC - Food only
     gen poor_ipl685_reg2 = (rdpcexp_ppp2017/pdef_re_ps_reg)<6.85   // UMIC - Price survey    
     gen poor_ipl685_reg3 = (rdpcexp_ppp2017/pdef_re_mx_reg)<6.85   // UMIC - Combined HH & Price survey    
+    gen poor_ipl685_reg4 = (rdpcexp_ppp2017/pdef_re_wr_reg)<6.85   // UMIC - Combined HH & Price survey w rent
+
+* label variables
+    la var poor_npl "NPL"
+    la var poor_ipl215 "IPL 2.15 - Undeflated"
+    la var poor_ipl365 "IPL 3.65 - Undeflated"
+    la var poor_ipl685 "IPL 6.85 - Undeflated"
+    la var poor_ipl215_str1 "IPL 2.15 - Spatially deflated by stratum - food only"
+    la var poor_ipl215_str2 "IPL 2.15 - Spatially deflated by stratum - price svy"
+    la var poor_ipl215_str3 "IPL 2.15 - Spatially deflated by stratum - combined"
+    la var poor_ipl215_str4 "IPL 2.15 - Spatially deflated by stratum - combined w rent"
+    la var poor_ipl365_str1 "IPL 3.65 - Spatially deflated by stratum - food only"
+    la var poor_ipl365_str2 "IPL 3.65 - Spatially deflated by stratum - price svy"
+    la var poor_ipl365_str3 "IPL 3.65 - Spatially deflated by stratum - combined"
+    la var poor_ipl365_str4 "IPL 3.65 - Spatially deflated by stratum - combined w rent"
+    la var poor_ipl685_str1 "IPL 6.85 - Spatially deflated by stratum - food only"
+    la var poor_ipl685_str2 "IPL 6.85 - Spatially deflated by stratum - price svy"
+    la var poor_ipl685_str3 "IPL 6.85 - Spatially deflated by stratum - combined"
+    la var poor_ipl685_str4 "IPL 6.85 - Spatially deflated by stratum - combined w rent"
+    la var poor_ipl215_reg1 "IPL 2.15 - Spatially deflated by regency - food only"
+    la var poor_ipl215_reg2 "IPL 2.15 - Spatially deflated by regency - price svy"
+    la var poor_ipl215_reg3 "IPL 2.15 - Spatially deflated by regency - combined" 
+    la var poor_ipl215_reg4 "IPL 2.15 - Spatially deflated by regency - combined w rent"
+    la var poor_ipl365_reg1 "IPL 3.65 - Spatially deflated by regency - food only"  
+    la var poor_ipl365_reg2 "IPL 3.65 - Spatially deflated by regency - price svy"
+    la var poor_ipl365_reg3 "IPL 3.65 - Spatially deflated by regency - combined" 
+    la var poor_ipl365_reg4 "IPL 3.65 - Spatially deflated by regency - combined w rent"
+    la var poor_ipl685_reg1 "IPL 6.85 - Spatially deflated by regency - food only"  
+    la var poor_ipl685_reg2 "IPL 6.85 - Spatially deflated by regency - price svy"
+    la var poor_ipl685_reg3 "IPL 6.85 - Spatially deflated by regency - combined" 
+    la var poor_ipl685_reg4 "IPL 6.85 - Spatially deflated by regency - combined w rent"
     
-save "${gdOutput}/1-index-povrate-2019-2021.dta", replace    
+save "${gdOutput}/1-index-povrate-2019-2021-2.dta", replace    
     
 * tables
     #delimit;
-        table () (year) [w=int(weind)], stat(mean poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-        poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-        poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-        poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-        poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-        poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-        poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3) 
+        table () (year) [w=int(weind)], stat(mean poor_npl 
+        poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+        poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+        poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4) 
         nformat(%6.4f);
-    collect label levels prov 
-        11	"Nanggroe Aceh Darussalam"
-        12	"Sumatera Utara"
-        13	"Sumatera Barat"
-        14	"Riau"
-        15	"Jambi"
-        16	"Sumatera Selatan"
-        17	"Bengkulu"
-        18	"Lampung"
-        19	"Kep. Bangka Belitung"
-        21	"Kep. Riau"
-        31	"DKI Jakarta"
-        32	"Jawa Barat"
-        33	"Jawa Tengah"
-        34	"DI Yogyakarta"
-        35	"Jawa Timur"
-        36	"Banten"
-        51	"Bali"
-        52	"Nusa Tenggara Barat"
-        53	"Nusa Tenggara Timur"
-        61	"Kalimantan Barat"
-        62	"Kalimantan Tengah"
-        63	"Kalimantan Selatan"
-        64	"Kalimantan Timur"
-        65  "Kalimantan Utara"
-        71	"Sulawesi Utara"
-        72	"Sulawesi Tengah"
-        73	"Sulawesi Selatan"
-        74	"Sulawesi Tenggara"
-        75	"Gorontalo"
-        76	"Sulawesi Barat"
-        81	"Maluku"
-        82	"Maluku Utara"
-        91	"Papua Barat"
-        94	"Papua" ;
     #delimit cr
     collect preview
-    putexcel set "${gdOutput}/1-output-2019-2021.xlsx", sheet("all_index", replace) modify
+    putexcel set "${gdOutput}/1-output-2019-2021-2.xlsx", sheet("all_index", replace) modify
     putexcel B2 = collect
 
     #delimit;
         table () (year) [w=int(weind)] if urban==1, stat(mean poor_npl 
-        poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-        poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-        poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3) 
+        poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+        poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+        poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4) 
         nformat(%6.4f);
-    collect label levels prov 
-        11	"Nanggroe Aceh Darussalam"
-        12	"Sumatera Utara"
-        13	"Sumatera Barat"
-        14	"Riau"
-        15	"Jambi"
-        16	"Sumatera Selatan"
-        17	"Bengkulu"
-        18	"Lampung"
-        19	"Kep. Bangka Belitung"
-        21	"Kep. Riau"
-        31	"DKI Jakarta"
-        32	"Jawa Barat"
-        33	"Jawa Tengah"
-        34	"DI Yogyakarta"
-        35	"Jawa Timur"
-        36	"Banten"
-        51	"Bali"
-        52	"Nusa Tenggara Barat"
-        53	"Nusa Tenggara Timur"
-        61	"Kalimantan Barat"
-        62	"Kalimantan Tengah"
-        63	"Kalimantan Selatan"
-        64	"Kalimantan Timur"
-        65  "Kalimantan Utara"
-        71	"Sulawesi Utara"
-        72	"Sulawesi Tengah"
-        73	"Sulawesi Selatan"
-        74	"Sulawesi Tenggara"
-        75	"Gorontalo"
-        76	"Sulawesi Barat"
-        81	"Maluku"
-        82	"Maluku Utara"
-        91	"Papua Barat"
-        94	"Papua" ;
     #delimit cr
     collect preview
-    putexcel set "${gdOutput}/1-output-2019-2021.xlsx", sheet("all_index_urb", replace) modify
+    putexcel set "${gdOutput}/1-output-2019-2021-2.xlsx", sheet("all_index_urb", replace) modify
     putexcel B2 = collect
 
     #delimit;
         table () (year) [w=int(weind)] if urban==0, stat(mean poor_npl 
-        poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-        poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-        poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3) 
+        poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+        poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+        poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4) 
         nformat(%6.4f);
-    collect label levels prov 
-        11	"Nanggroe Aceh Darussalam"
-        12	"Sumatera Utara"
-        13	"Sumatera Barat"
-        14	"Riau"
-        15	"Jambi"
-        16	"Sumatera Selatan"
-        17	"Bengkulu"
-        18	"Lampung"
-        19	"Kep. Bangka Belitung"
-        21	"Kep. Riau"
-        31	"DKI Jakarta"
-        32	"Jawa Barat"
-        33	"Jawa Tengah"
-        34	"DI Yogyakarta"
-        35	"Jawa Timur"
-        36	"Banten"
-        51	"Bali"
-        52	"Nusa Tenggara Barat"
-        53	"Nusa Tenggara Timur"
-        61	"Kalimantan Barat"
-        62	"Kalimantan Tengah"
-        63	"Kalimantan Selatan"
-        64	"Kalimantan Timur"
-        65  "Kalimantan Utara"
-        71	"Sulawesi Utara"
-        72	"Sulawesi Tengah"
-        73	"Sulawesi Selatan"
-        74	"Sulawesi Tenggara"
-        75	"Gorontalo"
-        76	"Sulawesi Barat"
-        81	"Maluku"
-        82	"Maluku Utara"
-        91	"Papua Barat"
-        94	"Papua" ;
     #delimit cr    
     collect preview
-    putexcel set "${gdOutput}/1-output-2019-2021.xlsx", sheet("all_index_rur", replace) modify
+    putexcel set "${gdOutput}/1-output-2019-2021-2.xlsx", sheet("all_index_rur", replace) modify
     putexcel B2 = collect
-    
-//     table (prov year) () [w=int(weind)], stat(mean poor_npl poor_ipl215 poor_ipl215_str3 poor_ipl215_reg3 poor_ipl365 poor_ipl365_str3 poor_ipl365_reg3 poor_ipl685 poor_ipl685_str3 poor_ipl685_reg3) nformat(%6.4f)
-//     table (prov year) () [w=int(weind)], stat(mean poor_npl poor_ipl215 poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_reg3) nformat(%6.4f)
-//     table (prov year) () [w=int(weind)], stat(mean poor_npl poor_ipl365 poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_reg3) nformat(%6.4f)
-//     table (prov year) () [w=int(weind)], stat(mean poor_npl poor_ipl685 poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_reg3) nformat(%6.4f)
-    
     
 * save data and graph
     // national level
@@ -252,13 +178,13 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
     preserve
     #delimit;
         collapse (mean) poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-        poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-        poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-        poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-        poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-        poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-        poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 [w=weind], by(year);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("national", replace);        
+        poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 
+        poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+        poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 
+        poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+        poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 
+        poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4 [w=weind], by(year);
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("national", replace);        
         twoway 
         (line poor_npl year, lp(l) lcol(black)) 
         (line poor_ipl215 year, lp(l) lcol(red)) 
@@ -286,13 +212,13 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
     preserve
     #delimit;
         collapse (mean) poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-        poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-        poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-        poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-        poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-        poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-        poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 [w=weind], by(year urban);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("urbanrural", replace);
+        poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 
+        poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+        poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 
+        poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+        poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 
+        poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4 [w=weind], by(year urban);
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("urbanrural", replace);
         
         twoway 
         (line poor_npl year, lp(l) lcol(black)) 
@@ -345,16 +271,17 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
     #delimit;
         collapse (mean) 
             poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 
+            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4
+            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4
+            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4
+            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4
+            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4
+            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4
             [w=weind], by(year region urban);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("region", replace);        
+            
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("region", replace);        
 
-    * urban rural
+    /* urban rural */
         twoway 
         (line poor_ipl215 year, lp(l) lcol(red)) 
         (line poor_ipl215_reg3 year, lp(-) lcol(red)) 
@@ -396,14 +323,15 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
                size(small)) 
                xlabel(2019(1)2021) ylabel(0(0.1)0.7);
         graph export "${gdOutput}/Graphs2/1-povrate-region-rur.png", replace;
-    
-    * method comparison
-        * urban
+
+    /* method comparison */
+        /* urban */
         twoway 
         (line poor_ipl365 year, lp(l) lcol(red)) 
         (line poor_ipl365_reg1 year, lp(l) lcol(blue))
         (line poor_ipl365_reg2 year, lp(l) lcol(orange)) 
         (line poor_ipl365_reg3 year, lp(l) lcol(green)) 
+        (line poor_ipl365_reg4 year, lp(l) lcol(gray))
         if urban==1,
         by(region, scale(0.75) title("Adjusted IPL Method Comparison - Urban - by Region")) 
         xtitle("year") ytitle("P0 Rate") 
@@ -411,26 +339,29 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
                label(2 "IPL 3.65 USD 2017 PPP - Food Only UV") 
                label(3 "IPL 3.65 USD 2017 PPP - Food & Non-Food Price") 
                label(4 "IPL 3.65 USD 2017 PPP - Food UV & Non-Food Price") 
+               label(5 "IPL 3.65 USD 2017 PPP - Food UV, Non-Food Price, Predicted rent")                
                size(small)) 
                xlabel(2019(1)2021) ylabel(0(0.1)0.7);
-        graph export "${gdOutput}/Graphs2/1-povrate-method-region-urb.png", replace;    
+        graph export "${gdOutput}/Graphs2/1-povrate-method-region-urb-2.png", replace;    
         
-        * rural
+        /* rural */
         twoway 
         (line poor_ipl365 year, lp(l) lcol(red)) 
         (line poor_ipl365_reg1 year, lp(l) lcol(blue))
         (line poor_ipl365_reg2 year, lp(l) lcol(orange)) 
         (line poor_ipl365_reg3 year, lp(l) lcol(green)) 
+        (line poor_ipl365_reg4 year, lp(l) lcol(gray))
         if urban==0,
-        by(region, scale(0.75) title("Adjusted IPL Method Comparison - Urban - by Region")) 
+        by(region, scale(0.75) title("Adjusted IPL Method Comparison - Rural - by Region")) 
         xtitle("year") ytitle("P0 Rate") 
         legend(label(1 "IPL 3.65 USD 2017 PPP") 
                label(2 "IPL 3.65 USD 2017 PPP - Food Only UV") 
                label(3 "IPL 3.65 USD 2017 PPP - Food & Non-Food Price") 
                label(4 "IPL 3.65 USD 2017 PPP - Food UV & Non-Food Price") 
+               label(5 "IPL 3.65 USD 2017 PPP - Food UV, Non-Food Price, Predicted rent")                         
                size(small)) 
                xlabel(2019(1)2021) ylabel(0(0.1)0.7);
-        graph export "${gdOutput}/Graphs2/1-povrate-method-region-rur.png", replace;    
+        graph export "${gdOutput}/Graphs2/1-povrate-method-region-rur-2.png", replace;    
     #delimit cr
     restore
     
@@ -439,43 +370,45 @@ save "${gdOutput}/1-index-povrate-2019-2021.dta", replace
     #delimit;
         collapse (mean)
             poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 
+            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4
+            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4
+            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4
+            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4
+            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4
+            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4
             [w=weind], by(prov provname year);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("province", replace);
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("province", replace);
     #delimit cr 
     restore
         
     // province urban (stratum) level
     preserve 
     #delimit;
-        collapse (mean) poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3
+        collapse (mean) 
+            poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
+            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 
+            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 
+            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 
+            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4
             [w=weind], by(prov provname urban year);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("stratum", replace);
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("stratum", replace);
     #delimit cr
     restore
         
     // regency level
     preserve 
     #delimit;
-        collapse (mean) poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
-            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 
-            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 
-            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 
-            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 
-            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 
-            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 
+        collapse (mean) 
+            poor_npl poor_ipl215 poor_ipl365 poor_ipl685 
+            poor_ipl215_str1 poor_ipl215_str2 poor_ipl215_str3 poor_ipl215_str4 
+            poor_ipl215_reg1 poor_ipl215_reg2 poor_ipl215_reg3 poor_ipl215_reg4 
+            poor_ipl365_str1 poor_ipl365_str2 poor_ipl365_str3 poor_ipl365_str4 
+            poor_ipl365_reg1 poor_ipl365_reg2 poor_ipl365_reg3 poor_ipl365_reg4 
+            poor_ipl685_str1 poor_ipl685_str2 poor_ipl685_str3 poor_ipl685_str4 
+            poor_ipl685_reg1 poor_ipl685_reg2 poor_ipl685_reg3 poor_ipl685_reg4 
             [w=weind], by(prov provname rege year);
-        export excel using "${gdOutput}/1-output-2019-2021.xlsx", firstrow(variables) sheet("regency", replace);
+        export excel using "${gdOutput}/1-output-2019-2021-2.xlsx", firstrow(variables) sheet("regency", replace);
     #delimit cr    
     restore

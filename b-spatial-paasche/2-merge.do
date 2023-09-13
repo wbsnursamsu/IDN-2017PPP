@@ -7,12 +7,18 @@ clear all
 foreach j in str reg {  
     foreach x in fo ps mx wr {
         forval t=2019/2021 {
+            if `t'==2019 {
+                use "${gdOutput}/paache-deflator-`j'-`t'-`x'.dta", clear
+                gen year=`t'
+                }
+            else {
             append using "${gdOutput}/paache-deflator-`j'-`t'-`x'.dta"
-            replace year = `t' if year==.
-        }
+            replace year=`t' if year==.    
+                }
+            }
     save "${gdOutput}/paache-deflator-`j'-`x'-series.dta", replace    
+        }
     }
-}
 
 /* merge paache */
 * stratum
@@ -40,7 +46,7 @@ la var pdef_hh_mx_str "Paasche stratum lvl - hh uv - hh & price"
 la var pdef_hh_wr_str "Paasche stratum lvl - hh uv - hh & price & rent"
     
 order year urban prov pdef_re_fo_str pdef_re_ps_str pdef_re_mx_str pdef_re_wr_str pdef_hh_fo_str pdef_hh_ps_str pdef_hh_mx_str pdef_hh_wr_str
-save "${gdOutput}/spatial-index-stratum.dta", replace
+save "${gdOutput}/spatial-index-stratum-2.dta", replace
 
 
 * municipality
@@ -68,7 +74,8 @@ la var pdef_hh_mx_reg "Paasche regency lvl - hh uv - hh & price"
 la var pdef_hh_wr_reg "Paasche regency lvl - hh uv - hh & price & rent"
 
 order year urban prov pdef_re_fo_reg pdef_re_ps_reg pdef_re_mx_reg pdef_re_wr_reg pdef_hh_fo_reg pdef_hh_ps_reg pdef_hh_mx_reg pdef_hh_wr_reg
-save "${gdOutput}/spatial-index-regency.dta", replace
+save "${gdOutput}/spatial-index-regency-2.dta", replace
+
 
 //
 // /* table */
