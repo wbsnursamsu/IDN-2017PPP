@@ -107,7 +107,7 @@ save "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shk-te
     /* SHKP */
     
 /*** identifier to sum value in hh based on ***/
-forval t=2015/2021 {
+forval t=2010/2022 {
     use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shkp-concordance-`t'.dta", clear
     replace komoditas=strltrim(komoditas)
     replace komoditas=stritrim(komoditas)
@@ -183,14 +183,17 @@ forval t=2015/2021 {
 /* merge SHKP for temporal deflator */
 clear
 use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shkp-temp-price-prov-bpscode-2015.dta", clear
-gen year=2015
-forval t=2016/2021 {
+gen year=2010
+forval t=2011/2022 {
     append using "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shkp-temp-price-prov-bpscode-`t'.dta"
     replace year=`t' if year==.
     }
+drop if year==2013    
 fillin year provcode code17
 drop _fillin
 gen urban=0    
+sort code17 provcode year
+bys code17 provcode: replace p_ps = (p_ps[_n-1]+p_ps[_n+1])/2 if year==2013 & p_ps==.
 order year provcode urban, first
 sort year provcode urban
 save "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shkp-temp-price-prov-bpscode-ALL.dta", replace
@@ -205,19 +208,16 @@ drop if provcode==.
 * cleaning 
 * check unbalanced commodities 
 preserve
-    collapse (count) p_ps, by(urban code17 year)
+    collapse (count) p_ps, by(code17 year)
     replace p_ps=. if p_ps==0
-    table (code17) (urban year), stat(mean p_ps) nototals
-    tostring year urban, replace
-    gen yearurb = year+urban
-    destring yearurb, replace
-    keep code17 p_ps yearurb
-    reshape wide p_ps, i(code17) j(yearurb)
+    table (code17) (year), stat(mean p_ps) nototals
+    keep code17 p_ps year
+    reshape wide p_ps, i(code17) j(year)
     egen exclude = rowmiss(p_ps*)
     keep if exclude==0
     gen include =1
     keep code17 include
-    save "${gdTemp}/inclusion-item-temporal.dta", replace
+    save "${gdTemp}/inclusion-item-temporal-rural.dta", replace
 restore 
 
-save "${gdOutput}/price-data-2015-2021.dta",replace
+save "${gdOutput}/price-data-rural-2010-2022.dta",replace

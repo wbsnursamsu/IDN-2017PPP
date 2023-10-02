@@ -1,10 +1,14 @@
 * Crosswalk
 
-use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shkp-concordance.dta", clear
-gen komoditas2013 = komoditas2012
-gen unit2013 = unit2012
+import excel using "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Village consumer price\crosswalk\shkp-sus-code-crosswalk_v2.xlsx", firstrow case(lower) clear
+save "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Village consumer price\crosswalk\shkp-concordance-all.dta", replace
 
-forval t=2010/2021 {
+use "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Village consumer price\crosswalk\shkp-concordance-all.dta", clear
+tostring komoditas2013 unit2013, replace
+replace komoditas2013 = komoditas2012
+replace unit2013 = unit2012
+
+forval t=2010/2022 {
     if (`t'>=2010 & `t'<=2014) {
         preserve
             keep komoditas`t' unit`t' code06 name06 code17 name17

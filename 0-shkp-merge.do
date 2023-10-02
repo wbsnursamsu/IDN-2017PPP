@@ -1,20 +1,22 @@
 cd "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Village consumer price\"
 
-forval t=2010/2021 {
+forval t=2010/2022 {
     import excel using "excel\\`t'-shkp-clean.xlsx", firstrow allstring clear
     rename *, lower 
     save "excel\\`t'-shkp.dta", replace    
     }    
     
-forval t=2010/2021 {
+forval t=2010/2022 {
     append using "excel\\`t'-shkp.dta"
-    save "stata\\shkp-2010-2021.dta", replace
+    save "stata\\shkp-2010-2022.dta", replace
     }
 
 replace komoditas=items if missing(komoditas)
 drop items
 replace provinsi=kota if missing(provinsi)
 drop kota
+replace provinsi=city if missing(provinsi)
+drop city 
 replace apr=april if missing(apr)
 drop april
 replace jun=juni if missing(jun)
@@ -28,20 +30,27 @@ replace sep=sept if missing(sep)
 drop sept
 replace dec=des if missing(dec)
 drop des
+replace year=tahun if missing(year)
+drop tahun
 replace average=ratarata if missing(average)
 drop ratarata
 replace unit=satuan if missing(unit)
 drop satuan
 
 drop r-au
-order tahun provinsi komoditas unit, first
-rename tahun year
+order year provinsi komoditas unit, first
 rename provinsi prov
 rename average avg
 
 destring year, replace
 drop if missing(year)
 
+foreach v of varlist komoditas unit {
+    replace `v' = strltrim(`v')
+    replace `v' = stritrim(`v')
+    replace `v' = strtrim(`v')
+    replace `v' = strrtrim(`v')     
+}
 
 foreach v of varlist jan-avg {
     replace `v' = strltrim(`v')
@@ -66,7 +75,7 @@ replace prov = subinstr(prov,"*)","",.)
 replace prov = subinstr(prov,")","",.)
 replace prov = subinstr(prov,"*","",.)
 replace prov = subinstr(prov," ***","",.)
-
+replace prov = "Kep. Riau" in 86229
 replace prov = "Nanggroe Aceh Darussalam" if prov=="Aceh"
 replace prov = "DI Yogyakarta" if prov=="D. I. Yogyakarta"
 replace prov = "Kep. Riau" if prov=="Kepulauan Riau"
@@ -111,4 +120,4 @@ gen provcode=.
     replace provcode=91 if prov=="Papua Barat"
     replace provcode=94 if prov=="Papua"
     
-save "stata\\shk-2010-2021-clean.dta", replace
+save "stata\\shkp-2010-2022-clean.dta", replace

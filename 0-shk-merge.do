@@ -23,6 +23,13 @@ use "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\
 
 append using "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\stata\shk-2019-2021.dta"
 
+foreach v of varlist komoditas unit {
+    replace `v' = strltrim(`v')
+    replace `v' = stritrim(`v')
+    replace `v' = strtrim(`v')
+    replace `v' = strrtrim(`v')     
+} 
+
 foreach v of varlist jan-avg {
     replace `v' = strltrim(`v')
     replace `v' = stritrim(`v')
