@@ -2,7 +2,7 @@
 	* REGIONAL DEFLATOR  -  PAASCHE
 	*----------------------------------------------------------------------*
 clear all
-set trace off
+set trace on
 
 forval t=2021/2021 {
 //     log using "${gdLog}/spatial-paasche-`t'.dta", replace
@@ -26,6 +26,7 @@ forval t=2021/2021 {
 //     /* rent price */
 //     merge 1:1 urut kode using "${gdTemp}/rent-predict-`t'-2.dta", nogen keepusing(rent prent hstat)
 //     destring kode, replace
+//     replace v = prent if ditem_all=="rent"
 //    
 //     * replace unit to 1 (unit has wrong entry as housing status)
 //         replace q = 1 if ditem_all=="rent"      // assuming all housing quantity is 1
@@ -388,9 +389,8 @@ forval t=2021/2021 {
     **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
-        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")    // mix - change only nonfood
-		replace v = prent if prent!=. & ditem_all=="rent"
-        
+        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")    // mx - change only nonfood
+		
         fillin code urban prov rege
 		drop _fillin
 		
@@ -417,21 +417,21 @@ forval t=2021/2021 {
             tempfile uv5
             save `uv5', replace
         restore
-        
+      
         merge m:1 code urban prov rege using `uv1', nogen
         merge m:1 code urban prov using `uv2', nogen
         merge m:1 code prov using `uv3', nogen
         merge m:1 code urban using `uv4', nogen
         merge m:1 code using `uv5', nogen
-                
+              
         /* THIS IS USING WEIGHTED MEAN
-		egen uv_1 = wtmean(uv_hh), weight(popw) by (code urban prov rege)      // regency
-		egen uv_2 = wtmean(uv_hh), weight(popw) by (code urban prov)           // strata  
+		egen uv_1 = wtmean(uv_hh) , weight(popw) by (code urban prov rege)      // regency
+		egen uv_2 = wtmean(uv_hh) , weight(popw) by (code urban prov)           // strata  
 		egen uv_3 = wtmean(uv_hh), weight(popw) by (code prov) 	                // province
 		egen uv_4 = wtmean(uv_hh), weight(popw) by (code urban)                 // urban rural
 		egen uv_5 = wtmean(uv_hh), weight(popw) by (code)                       // national - REFERENCE
 		*/
-        
+      
         // replace if missing UVs to higher stratification
         forval j=2/5 {
             replace uv_1 = uv_`j' if uv_1==.
@@ -439,7 +439,7 @@ forval t=2021/2021 {
         forval j=1/5 {
             replace uv_hh = uv_`j' if uv_hh==.
             }
-        
+      
 		// keeping only purchased food items at municipality, strata and national level 
 		keep if uv_hh!=. & uv_1!=. & uv_5!=. 
 		
@@ -448,20 +448,20 @@ forval t=2021/2021 {
 		drop if fr<5 | fr==.		
 		/* replacing  the outlier unit values - 5 times > or < than national unit value */
 		replace uv_1 = uv_5  if (uv_1 > 5*uv_5 | uv_1 <uv_5/5)  
-        
+      
         /* weights by household */
         bys hhid: egen t_v = total(v)
         gen sh_v = v/t_v
-        
+      
         /* paache deflator household level */
         gen sh_uv1  = (uv_5/uv_1)*sh_v            // based on regency UV
         gen sh_uvhh = (uv_5/uv_hh)*sh_v           // based on HH UV 
-        
+      
 		collapse (sum) sh_uv1 sh_uvhh (mean) popw [weight = popw], by(hhid prov rege urban) 
-        
+      
         gen pdef_re = 1/sh_uv1
         gen pdef_hh = 1/sh_uvhh
-        
+      
         la var pdef_re "Paasche spatial index HH level with regency UV"
         la var pdef_hh "Paasche spatial index HH level with HH UV"
         
@@ -500,5 +500,6 @@ forval t=2021/2021 {
 
         compress
         save "${gdOutput}/paache-deflator-reo-`t'-wr.dta", replace    
-		
+
+log close		
     }
