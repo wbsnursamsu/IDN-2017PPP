@@ -19,12 +19,12 @@ foreach c of local commands {
 **** Please change the following directories according to your local
 clear
 local suser = upper(c(username))
+confirmdir "D:\wb594719"
+local serv = r(confirmdir)
 * gdData: Raw Datasets (EEAPV IDN Data Files)
 
-if "`suser'" == "WB594719" {
+if ("`suser'" == "WB594719") & (`serv' !=0) {
     ** User: Sam (1. for laptop; 2 - for server)
-    confirmdir "C:/Users/wb594719/OneDrive - WBG/Documents/GitHub/IDN-2017PPP"
-    if _rc==0 {
         local ldLocal "C:/Users/wb594719/OneDrive - WBG/Documents/GitHub/IDN-2017PPP"
         global gdData "C:/Users/wb594719/OneDrive - WBG/EEAPV IDN Documents"         
         global gdCrsw "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/crosswalk"
@@ -33,17 +33,16 @@ if "`suser'" == "WB594719" {
         global gdSush "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-hh"
         global gdExpp "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-exppl"        
     }
-    else {
-        local ldLocal "D:/wb594719/IDN-2017PPP"
-        global gdData "D:/wb594719/Data"        
-        global gdCrsw "D:/wb594719/crosswalk"                 
-        global gdPric "D:/wb594719/price-survey"
-        global gdCons "D:/wb594719/susenas-pipeline-cons"         
-        global gdSush "D:/wb594719/susenas-pipeline-hh"
-        global gdExpp "D:/wb594719/susenas-pipeline-exppl"        
-        }
+else if ("`suser'" == "WB594719") & (`serv' ==0) {
+	local ldLocal "D:/wb594719/IDN-2017PPP"
+	global gdData "D:/wb594719/Data"        
+	global gdCrsw "D:/DATA/2017-PPP-Deflator/crosswalk"                 
+	global gdPric "D:/DATA/2017-PPP-Deflator/price-survey"
+	global gdCons "D:/DATA/2017-PPP-Deflator/susenas-pipeline-cons"         
+	global gdSush "D:/DATA/2017-PPP-Deflator/susenas-pipeline-hh"
+	global gdExpp "D:/DATA/2017-PPP-Deflator/susenas-pipeline-exppl"        
     ** Others: fill here
-}
+	}
 else { 
 	display as error "Please specify your username in 01-init.do first."
 	error 1
