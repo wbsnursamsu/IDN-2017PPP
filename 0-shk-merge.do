@@ -7,10 +7,10 @@ foreach file of local f {
     rename tahun year
     rename average avg
     rename kota city
-    save `"`file'"'.dta, replace    
+    save `"`file'.dta"', replace    
     }    
 
-local f: dir "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\stata\temp" files "*.dta"    
+local f: dir "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\excel-converted" files "*.dta"    
 foreach file of local f {
     append using "`file'", force
     }
@@ -31,6 +31,9 @@ foreach v of varlist komoditas unit {
 } 
 
 foreach v of varlist jan-avg {
+    egen `v'2 = sieve(`v'), char(0123456789.)
+    drop `v'
+    rename `v'2 `v'
     replace `v' = strltrim(`v')
     replace `v' = stritrim(`v')
     replace `v' = strtrim(`v')
@@ -39,9 +42,12 @@ foreach v of varlist jan-avg {
     replace `v' = subinstr(`v'," ","",.)
     replace `v' = subinstr(`v',"-","",.)
 }
+drop r-am
+destring jan-avg, replace force
 
-replace city = regexr(city,"^[1−9][1-9][ ]+.","")
-replace city = regexr(city,"^([0−9][0−9])","")
+egen city2 = sieve(city), keep(alphabetic)
+    drop city
+    rename city2 city
 replace city = strltrim(city)
 replace city = stritrim(city)
 replace city = strtrim(city)
@@ -127,6 +133,7 @@ replace city = "Lhokseumawe"      if city=="Lhokseumawe0"
 replace city = "Banda Aceh"      if city=="Banda"
 replace city = "Bandar Lampung"  if city=="Bandar"
 replace city = "Baubau"          if city=="Bau-Bau"
+replace city = "Baubau"          if city=="BauBau"
 replace city = "Palangka Raya"   if city=="Palangka"
 replace city = "Palangka Raya"   if city=="Palangkaraya"
 replace city = "Pangkalpinang"   if city=="Pangkal"
@@ -134,12 +141,16 @@ replace city = "Pangkalpinang"   if city=="Pangkal Pinang"
 replace city = "Parepare"        if city=="Pare-Pare"
 replace city = "Pematangsiantar" if city=="Pematang"
 replace city = "Pematangsiantar" if city=="Pematang Sianta"
+replace city = "Pematangsiantar" if city=="PematangSianta"
 replace city = "Pematangsiantar" if city=="Pematang Siantar"
+replace city = "Pematangsiantar" if city=="PematangSiantar"
 replace city = "Pematangsiantar" if city=="P. Siantar"
+replace city = "Pematangsiantar" if city=="PSiantar"
 replace city = "Pematangsiantar" if city=="P.Siantar"
 replace city = "Sampit"          if city=="Sampi"
 replace city = "Tanjung Pinang"  if city=="Tanjungpinang"
 replace city = "Jakarta"         if city=="DKI Jakarta"
+replace city = "Jakarta"         if city=="DKIJakarta"
 replace city = "Jakarta"         if city=="DKI"
 replace city = "Jakarta"         if city=="Dki Jakarta"
 replace city = "Waingapu"        if city=="Waigapu"
@@ -147,15 +158,23 @@ replace city = "Kotabaru"        if city=="Kota baru"
 replace city = "Bekasi"          if city=="BekasI"
 replace city = "Dumai"           if city=="DumaI"
 replace city = "Dumai"           if city=="D U M A I"
+replace city = "Dumai"           if city=="DUMAI"
 replace city = "Batam"           if city=="B A T A M"
+replace city = "Batam"           if city=="BATAM"
 replace city = "Padangsidimpuan" if city=="P. Sidempuan"
+replace city = "Padangsidimpuan" if city=="PSidempuan"
 replace city = "Padangsidimpuan" if city=="Padangsidempuan"
 replace city = "Pekanbaru"       if city=="Pakanbaru"
 replace city = "Parepare"        if city=="Pare Pare"
+replace city = "Parepare"        if city=="ParePare"
 replace city = "Purwokerto"      if city=="Purw Okerto"
+replace city = "Purwokerto"      if city=="PurwOkerto"
 replace city = "Banyuwangi"      if city=="Banyuw Angi"
+replace city = "Banyuwangi"      if city=="BanyuwAngi"
 replace city = "Singkawang"      if city=="Singkaw Ang"
+replace city = "Singkawang"      if city=="SingkawAng"
 replace city = "Manokwari"       if city=="Manokw Ari"
+replace city = "Manokwari"       if city=="ManokwAri"
 replace city = "Sukabumi"        if city=="Sukabumi 80"
 replace city = "Sukabumi"        if city=="Sukabum i"
 replace city = "Bengkulu"        if city=="Bengkulu0"
@@ -193,6 +212,7 @@ replace prov =	18	if city ==	"Metro"
 replace prov =	19	if city ==	"Tanjung Pandan"
 replace prov =	19	if city ==	"Pangkalpinang"
 replace prov =	21	if city ==	"Batam"
+replace prov =	21	if city ==	"BATAM"
 replace prov =	21	if city ==	"Tanjung Pinang"
 replace prov =	31	if city ==	"Jakarta"
 replace prov =	31	if city ==	"DKI Jakarta"
@@ -241,6 +261,7 @@ replace prov =	64	if city ==	"Balikpapan"
 replace prov =	64	if city ==	"Samarinda"
 replace prov =	65	if city ==	"Tarakan"
 replace prov =	65	if city ==	"Tanjung Selor"
+replace prov =	65	if city ==	"TanjungSelor"
 replace prov =	71	if city ==	"Manado"
 replace prov =	71	if city ==	"Kotamobagu"    
 replace prov =	72	if city ==	"Palu"

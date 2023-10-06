@@ -12,6 +12,10 @@ set more off
 
 forval t=2015/2021 {
     use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shk-concordance-`t'.dta", clear
+    g komoditas2 = lower(komoditas)
+    drop komoditas
+    rename komoditas2 komoditas 
+
     replace komoditas=strltrim(komoditas)
     replace komoditas=stritrim(komoditas)
     replace komoditas=strrtrim(komoditas)
