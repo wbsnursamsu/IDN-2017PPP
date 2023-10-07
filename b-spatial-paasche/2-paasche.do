@@ -11,8 +11,10 @@ forval t=2010/2022 {
     **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
+        
         replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")
-		
+		replace uv_hh = prent if inlist(ditem_all,"rent")
+        
         fillin code urban prov rege
 		drop _fillin
 		
@@ -75,18 +77,11 @@ forval t=2010/2022 {
         gen pdef = 1/sh_uvhh
       
         la var pdef "Paasche spatial index HH level with HH UV"
+        gen year=`t'
         
 		*!!! SAVE BEFORE COLLAPSE !!!
 		compress 
 		save "${gdOutput}/paasche-deflator-hh-`t'-wr.dta", replace
-
-        /* regency only */    
-        collapse (median) pdef [weight = popw] , by(prov rege) 
-        replace pdef=1 if pdef==.
-        la var pdef "Paasche spatial stratum level with HH UV"
-
-        compress
-        save "${gdOutput}/paache-deflator-reo-`t'-wr.dta", replace    
-
+ 
 log close		
     }

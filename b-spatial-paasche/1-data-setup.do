@@ -53,9 +53,6 @@ foreach t in 2010 2011 2012 2015 2016 2017 2018 2019 2020 2021 2022 {
     merge 1:1 urut kode using "${gdTemp}/rent-predict-mar-`t'-2.dta", nogen keepusing(rent prent hstat)
     destring kode, replace
     
-    * replace rent with predicted rent
-        replace v = prent if ditem_all=="rent"
-   
     * replace unit to 1 (unit has wrong entry as housing status)
         replace q = 1 if ditem_all=="rent"      // assuming all housing quantity is 1
            
@@ -132,9 +129,6 @@ foreach t in 2013 2014 {
     merge 1:1 urut kode using "${gdTemp}/rent-predict-pool-`t'-2.dta", nogen keepusing(rent prent hstat)
     destring kode, replace
     
-    * replace rent with predicted rent
-        replace v = prent if ditem_all=="rent"
-   
     * replace unit to 1 (unit has wrong entry as housing status)
         replace q = 1 if ditem_all=="rent"      // assuming all housing quantity is 1
            
@@ -157,6 +151,7 @@ foreach t in 2013 2014 {
 		// purchased food table
 		g purch =(v > 0 & v !=.) 
 		keep if purch == 1
+        
 		//unit values for purchased food (hh level)		
 		g uv_hh = epurch/qpurch 
 
