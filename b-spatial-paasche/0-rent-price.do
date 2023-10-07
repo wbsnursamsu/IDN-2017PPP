@@ -133,7 +133,7 @@ foreach t in 2013 2014 {
     * predicted rent
         preserve
             expand 2, gen(id)
-            g areacode = prov*10000 + rege*100 + urban
+            g areacode = prov*100 + rege
             
             replace rent = . if id==1
             replace house_area=30 if id==1
@@ -145,7 +145,7 @@ foreach t in 2013 2014 {
             replace floor_type1=1 if id==1
             
             reg rent house_area i.elec_type i.sani_type i.disp_type ///
-                i.roof_type i.wall_type i.floor_type1 i.provcode i.urban [w=popw], ro 
+                i.roof_type i.wall_type i.floor_type1 i.areacode i.urban [w=popw], ro 
                             
             predict prent
             drop if id==0
