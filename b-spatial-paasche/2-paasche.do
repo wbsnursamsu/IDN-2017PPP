@@ -3,10 +3,8 @@
 	*----------------------------------------------------------------------*
 clear all
 set trace off
-log close
 
 forval t=2010/2022 {
-    log using "${gdLog}/spatial-paasche-`t'.dta", replace
 
     **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
     
@@ -82,6 +80,5 @@ forval t=2010/2022 {
 		*!!! SAVE BEFORE COLLAPSE !!!
 		compress 
 		save "${gdOutput}/paasche-deflator-hh-`t'-wr.dta", replace
- 
-log close		
+
     }

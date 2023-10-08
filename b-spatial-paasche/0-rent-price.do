@@ -1,7 +1,7 @@
 
 
 clear all
-set trace on
+set trace off
 log close 
 	
 foreach t in 2010 2011 2012 2015 2016 2017 2018 2019 2020 2021 2022 {        
@@ -56,7 +56,9 @@ foreach t in 2010 2011 2012 2015 2016 2017 2018 2019 2020 2021 2022 {
         la def hstat 1 "Own" 2 "Rent" 3 "Others"
         la val hstat hstat
         
-    * save for deflator !! 
+    * save for deflator !!
+		drop if missing(urut)
+		duplicates drop urut kode, force
         save "${gdTemp}/rent-predict-`t'-2.dta", replace
         
     * replace unit to 1 (unit has wrong entry as housing status)
@@ -165,6 +167,8 @@ foreach t in 2013 2014 {
         la val hstat hstat
         
     * save for deflator !! 
+		drop if missing(urut)
+		duplicates drop urut kode, force	
         save "${gdTemp}/rent-predict-`t'-2.dta", replace
         
     * replace unit to 1 (unit has wrong entry as housing status)
@@ -269,3 +273,5 @@ order year prov provname provcode urban rent_pi prent_pi
 
 save "${gdOutput}/rent-price-all-2.dta", replace
 export excel using "${gdOutput}/rent-price-all-2.xls", firstrow(variables) replace
+
+beep

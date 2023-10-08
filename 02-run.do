@@ -19,8 +19,21 @@ if "${gdData}"=="" {
 **** Step 1: Cleaning SUSENAS dataset
 do "$gdDo\04-cons_mod_cleaning.do"
 		
-**** Step 2: Generate the Laspeyres Spatial Index Dataset
-do "$gdDo\05-laspeyres_spatial.do"
+**** SPATIAL PAASCHE
+cap noi do "${gdDo}/b-spatial-paasche/0-rent-price.do"
+
+cap noi do "${gdDo}/b-spatial-paasche/1-data-setup.do"
+if (_rc) {
+    beep
+	sleep 250
+	beep
+	sleep 250
+	beep
+	}
+
+cap noi do "${gdDo}/b-spatial-paasche/2-paasche.do"
+cap noi do "${gdDo}/b-spatial-paasche/3-merge-new.do"
+cap noi do "${gdDo}/b-spatial-paasche/4-povrate-calculation.do"
 		
 **** Step 3: Reconstruct Poverty Lines using Laspeyres Spatial Index 
 do "$gdDo\06-povline_reconstruction.do"
