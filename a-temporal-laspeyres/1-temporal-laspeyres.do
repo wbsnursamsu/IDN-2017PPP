@@ -7,9 +7,13 @@
 * Select categories
     use "${gdCons}/sus-cm-mar-2017-full.dta", replace
     merge m:1 code17 using "${gdTemp}/inclusion-item-temporal-rural.dta", nogen
+    
     drop if include==.
     drop include
     keep if urban==0
+    
+    *!!! Drop VEHICLE (DURABLE should be dropped too) code 342 !!!*
+    drop if code17==342
     
     g hhid = urut
     g prov = provcode
