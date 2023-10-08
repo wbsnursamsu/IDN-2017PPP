@@ -29,7 +29,7 @@ forval t=2010/2022 {
     /* for cons hh data - replace code18 with code_2 and collapse */
     preserve
         keep code_c code_2
-        duplicates drop 
+        duplicates drop code_c, force
         gen urban=1
         save "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shk-adjust-`t'.dta", replace
     restore
@@ -129,7 +129,7 @@ forval t=2010/2022 {
     /* for cons hh data - replace code18 with code_2 and collapse */
     preserve
         keep code_c code_2
-        duplicates drop 
+        duplicates drop code_c, force
         gen urban=0
         save "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shkp-adjust-`t'.dta", replace
     restore
