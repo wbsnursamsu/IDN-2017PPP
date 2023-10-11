@@ -50,7 +50,11 @@ foreach v of varlist komoditas unit {
     replace `v' = stritrim(`v')
     replace `v' = strtrim(`v')
     replace `v' = strrtrim(`v')     
+    g `v'2 = lower(`v')
+    drop `v'
+    rename `v'2 `v'
 }
+
 
 foreach v of varlist jan-avg {
     replace `v' = strltrim(`v')
@@ -61,6 +65,12 @@ foreach v of varlist jan-avg {
     replace `v' = subinstr(`v'," ","",.)
     replace `v' = subinstr(`v',"-","",.)
 }
+
+destring jan-avg, replace force
+*** !!! Adjust Coffee from Ons to KG !!! ***
+foreach v of varlist jan-avg {
+    replace `v' = `v'*10 if komoditas=="coffee"
+	}
 
 replace prov = strltrim(prov)
 replace prov = stritrim(prov)

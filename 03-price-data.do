@@ -56,12 +56,12 @@ forval t=2010/2022 {
         keep if year==`t'
         
         foreach v of varlist jan-avg {
-            replace avg = avg*1000 if avg<300
+            replace `v' = `v'*1000 if `v'<300
             }
         
     * geometric mean province
     foreach v of varlist jan-avg {
-            egen g_`v' = gmean(`v'), by(prov komoditas)
+		egen g_`v' = gmean(`v'), by(prov komoditas)
         }
     collapse (mean) g_*, by(prov komoditas)
 
@@ -196,6 +196,7 @@ foreach v of varlist p_g_jan-p_g_avg {
 fillin year provcode kode
 drop _fillin
 gen urban=0    
+
 sort kode provcode year
 foreach v of varlist p_g_jan-p_g_avg {
     bys kode provcode: replace `v' = (`v'[_n-1]+`v'[_n+1])/2 if year==2013 & `v'==.
@@ -203,3 +204,12 @@ foreach v of varlist p_g_jan-p_g_avg {
 order year provcode urban, first
 sort provcode kode year 
 save "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shkp-price-prov-bpscode-ALL.dta", replace
+
+/* APPEND EVERYTHING */
+use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shk-price-prov-bpscode-ALL.dta", clear 
+append using "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other/shk-price-prov-bpscode-ALL.dta"
+
+
+foreach v of varlist p_g_jan-p_g_avg {
+	replace `v'=. if `v'==0
+	}
