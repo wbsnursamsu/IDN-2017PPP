@@ -11,7 +11,7 @@ forval t=2010/2022 {
         use "${gdTemp}/temp-susenas-`t'.dta", clear
         
         replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")
-		replace uv_hh = prent if inlist(ditem_all,"rent")
+		drop if inlist(ditem_all,"rent")
         
         fillin code urban prov rege
 		drop _fillin
@@ -77,8 +77,8 @@ forval t=2010/2022 {
         la var pdef "Paasche spatial index HH level with HH UV"
         gen year=`t'
         
-		*!!! SAVE BEFORE COLLAPSE !!!
+		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/paasche-deflator-hh-`t'-wr.dta", replace
+		save "${gdOutput}/spdef-med-hh-`t'-mx.dta", replace
 
     }

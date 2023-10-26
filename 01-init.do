@@ -7,7 +7,7 @@
 ********************************************************************************
 
 *** Install necessary commands
-local commands = "confirmdir mmerge unique _gwtmean egenmore"
+local commands = "confirmdir mmerge unique _gwtmean gtools"
 foreach c of local commands {
 	qui capture which `c' 
 	qui if _rc != 0 {

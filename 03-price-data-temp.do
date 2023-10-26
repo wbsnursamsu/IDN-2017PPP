@@ -100,6 +100,7 @@ gen urban=1
 
 sort code17 provcode year
 foreach v of varlist p_g_jan-p_g_avg {
+    bys code17 provcode: replace `v' = (`v'[_n-1]+`v'[_n+1])/2 if year==2012 & `v'==.	
     bys code17 provcode: replace `v' = (`v'[_n-1]+`v'[_n+1])/2 if year==2015 & `v'==.
     bys code17 provcode: replace `v' = (`v'[_n-1]+`v'[_n+1])/2 if year==2017 & `v'==.
     bys code17 provcode: replace `v' = (`v'[_n-1]+`v'[_n+1])/2 if year==2018 & `v'==.    

@@ -1,6 +1,6 @@
 cd "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\stata"
 
-append using 00-shk-price-2019.dta
+use "00-shk-price-2019.dta", clear
 append using 00-shk-price-2020.dta
 append using 00-shk-price-2021.dta
 
@@ -26,7 +26,7 @@ rename Unit unit
 save "19-21-match.dta", replace
 
 clear 
-append using 00-shk-price-2019.dta
+use "00-shk-price-2019.dta", clear
 append using 00-shk-price-2020.dta
 append using 00-shk-price-2021.dta
 

@@ -1,6 +1,6 @@
 * Crosswalk
 
-use "C:\Users\wb594719\OneDrive - WBG\Documents\GitHub\IDN-2017PPP\Other\shk-concordance-v3.dta", clear
+use "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\crosswalk\shk-concordance-v5.dta", clear
 
 forval t=2010/2022 {
     if (`t'>=2010 & `t'<=2014) {
