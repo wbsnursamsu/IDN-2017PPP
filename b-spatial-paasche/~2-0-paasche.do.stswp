@@ -6,22 +6,45 @@ set trace off
 
 forval t=2010/2022 {
 
-    **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
+    **# /* TO BE USED - FOOD, FUEL, ENERGY, RENT */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
         
-        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")
+        keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
 		replace uv_hh = prent if inlist(ditem_all,"rent")
         
         fillin code urban prov rege
 		drop _fillin
 		
-		*** unit values by levels (weighted mean)
-		egen uv_1 = wtmean(uv_hh) , weight(popw) by (code urban prov rege)      // regency
-		egen uv_2 = wtmean(uv_hh) , weight(popw) by (code urban prov)           // strata  
-		egen uv_3 = wtmean(uv_hh), weight(popw) by (code prov) 	                // province
-		egen uv_4 = wtmean(uv_hh), weight(popw) by (code urban)                 // urban rural
-		egen uv_5 = wtmean(uv_hh), weight(popw) by (code)                       // national - REFERENCE
+		*** unit values by levels
+        // calculate weighted median
+        preserve
+            collapse (median) uv_1=uv_hh [w=popw], by(code urban prov rege)     // regency
+            tempfile uv1
+            save `uv1', replace
+        restore, preserve
+            collapse (median) uv_2=uv_hh [w=popw], by(code urban prov)          // strata
+            tempfile uv2
+            save `uv2', replace
+        restore, preserve
+            collapse (median) uv_3=uv_hh [w=popw], by(code prov)                // province
+            tempfile uv3
+            save `uv3', replace
+        restore, preserve
+            collapse (median) uv_4=uv_hh [w=popw], by(code urban)               // urban rural
+            tempfile uv4
+            save `uv4', replace
+        restore, preserve
+            collapse (median) uv_5=uv_hh [w=popw], by(code)                     // national - REFERENCE
+            tempfile uv5
+            save `uv5', replace
+        restore
+      
+        merge m:1 code urban prov rege using `uv1', nogen
+        merge m:1 code urban prov using `uv2', nogen
+        merge m:1 code prov using `uv3', nogen
+        merge m:1 code urban using `uv4', nogen
+        merge m:1 code using `uv5', nogen
                     
         // replace if missing UVs to higher stratification
         forval j=2/5 {
@@ -56,6 +79,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-mean-hh-`t'-wr.dta", replace
+		save "${gdOutput}/0spdef-med-hh-`t'-0.dta", replace
 
     }

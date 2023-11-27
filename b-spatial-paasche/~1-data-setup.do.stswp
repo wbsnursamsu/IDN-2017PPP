@@ -45,7 +45,7 @@ foreach t in 2010 2011 2012 2015 2016 2017 2018 2019 2020 2021 2022 {
 
     * collapse to adjust with price survey and merge with price survey data
         collapse (sum) q v c (mean) weind wert, by(urut year provcode kabcode urban kode ditem_all)
-        merge m:1 provcode urban kode year using "${gdOutput}/price-data-spatial-2010-2022.dta", keepusing(p_*) nogen 
+        merge m:1 provcode urban kode year using "${gdOutput}/price-data-spatial-2010-2022.dta", keepusing(p_g_*) nogen 
         keep if year==`t'
         duplicates drop urut kode, force 
         tostring kode, replace

@@ -11,7 +11,7 @@ save "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey
 use "C:\Users\wb594719\OneDrive - WBG\EEAPV IDN Documents\Consumer price survey\crosswalk\shk-concordance-v6.dta", clear
 drop unit*
 foreach v of varlist komoditas2010-komoditas_all {
-	replace `v'= lower(`v')
+	replace `v'=lower(`v')
     replace `v'=strltrim(`v')
     replace `v'=stritrim(`v')
     replace `v'=strrtrim(`v')

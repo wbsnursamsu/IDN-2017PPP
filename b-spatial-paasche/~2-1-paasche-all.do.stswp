@@ -9,7 +9,9 @@ forval t=2010/2022 {
     **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
-		keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel")
+        
+        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
+		replace uv_hh = prent if inlist(ditem_all,"rent")
         
         fillin code urban prov rege
 		drop _fillin
@@ -77,6 +79,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-3.dta", replace
+		save "${gdOutput}/00-spdef-med-hh-`t'-1.dta", replace
 
     }

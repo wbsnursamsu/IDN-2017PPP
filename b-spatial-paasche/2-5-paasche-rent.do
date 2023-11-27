@@ -78,6 +78,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-rn.dta", replace
+		save "${gdOutput}/spdef-med-hh-`t'-5.dta", replace
 
     }

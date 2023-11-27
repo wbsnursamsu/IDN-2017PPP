@@ -6,11 +6,11 @@ set trace off
 
 forval t=2010/2022 {
 
-    **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
+    **# /* TO BE USED - FOOD, FUEL, ENERGY, RENT */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
         
-        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")
+        keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
 		replace uv_hh = prent if inlist(ditem_all,"rent")
         
         fillin code urban prov rege
@@ -79,6 +79,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-wr.dta", replace
+		save "${gdOutput}/spdef-med-hh-`t'-0.dta", replace
 
     }
