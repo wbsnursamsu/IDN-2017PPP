@@ -1,18 +1,17 @@
 	*----------------------------------------------------------------------*
-	* REGIONAL DEFLATOR  -  PAASCHE
+	* URBAN DEFLATOR  FOR 2011 AND 2017 -  PAASCHE
 	*----------------------------------------------------------------------*
 clear all
 set trace off
 
-forval t=2010/2022 {
+foreach t of numlist 2011 2017 {
 
-    **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
+    **# /* TO BE USED FOR MEASUREMENT - FOOD, FUEL, ENERGY, RENT - URBAN PRICE REFERENCE */
     
-        use "${gdTemp}/temp-susenas-`t'.dta", clear
-        
-        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel")
-		drop if inlist(ditem_all,"rent")
-        
+        use "${gdTemp}/temp-susenas-`t'.dta", clear        
+        keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
+		replace uv_hh = prent if inlist(ditem_all,"rent")
+        		
         fillin code urban prov rege
 		drop _fillin
 		
@@ -35,7 +34,7 @@ forval t=2010/2022 {
             tempfile uv4
             save `uv4', replace
         restore, preserve
-            collapse (median) uv_5=uv_hh [w=popw], by(code)                     // national - REFERENCE
+            collapse (median) uv_5=uv_hh [w=popw], by(code)                     // NATIONAL - REFERENCE PRICE
             tempfile uv5
             save `uv5', replace
         restore
@@ -47,27 +46,22 @@ forval t=2010/2022 {
         merge m:1 code using `uv5', nogen
                     
         // replace if missing UVs to higher stratification
-        forval j=2/5 {
-            replace uv_1 = uv_`j' if uv_1==.
-            }
         forval j=1/5 {
             replace uv_hh = uv_`j' if uv_hh==.
             }
-      
+        
 		// keeping only purchased food items at municipality, strata and national level 
 		keep if uv_hh!=. & uv_1!=. & uv_5!=. 
 		
 		/* drop if  less than 5 items purchased, by municipality)*/
 		egen fr = count(_n), by(code urban prov rege) 
-		drop if fr<5 | fr==.		
-		/* replacing  the outlier unit values - 5 times > or < than national unit value */
-		replace uv_1 = uv_5  if (uv_1 > 5*uv_5 | uv_1 <uv_5/5)  
+		drop if fr<5 | fr==.	
       
         /* weights by household */
         bys hhid: egen t_v = total(v)
         gen sh_v = v/t_v
       
-        /* paache deflator household level */
+        /* paasche deflator household level */
         gen sh_uvhh = (uv_5/uv_hh)*sh_v           // based on HH UV 
       
 		collapse (sum) sh_uvhh (mean) popw [weight = popw], by(hhid prov rege urban) 
@@ -77,8 +71,19 @@ forval t=2010/2022 {
         la var pdef "Paasche spatial index HH level with HH UV"
         gen year=`t'
         
+        /* Urban Rural deflator */
+        collapse (median) pdef [weight = popw] , by(urban year)
+
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-2.dta", replace
-
+		save "${gdTemp}/0-urban-deflator-`t'-pip.dta", replace
     }
+    
+use "${gdTemp}/0-urban-deflator-2011-pip.dta", clear
+append using "${gdTemp}/0-urban-deflator-2017-pip.dta"
+greshape wide pdef, i(urban) j(year)
+drop if urban==0
+rename urban id
+rename pdef2011 udef2011
+rename pdef2017 udef2017
+save "${gdOutput}/0-urban-deflator-pip.dta", replace 

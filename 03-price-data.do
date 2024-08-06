@@ -135,7 +135,7 @@ forval t=2010/2022 {
     drop if code_c==.
     
     g code_2 = code_c
-    bys komoditas: replace code_2 = code_c[1]
+    bys komoditas_all: replace code_2 = code_c[1]
     
     /* for cons hh data - replace code18 with code_2 and collapse */
     preserve

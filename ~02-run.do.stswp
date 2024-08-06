@@ -37,4 +37,4 @@ cap noi do "${gdDo}/b-spatial-paasche/2-5-paasche-rent.do"
 cap noi do "${gdDo}/b-spatial-paasche/3-0-merge.do"
 cap noi do "${gdDo}/b-spatial-paasche/4-0-povrate-calculation.do"
 		
-**** SPATIAL DEFLATOR FOR MEASUREMENT
+**** SPATIAL DEFLATOR FOR MEASURE

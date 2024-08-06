@@ -31,7 +31,7 @@ if ("`suser'" == "WB594719") & (`serv' !=0) {
         global gdPric "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/price-survey"        
         global gdCons "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-cons" 
         global gdSush "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-hh"
-        global gdExpp "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-exppl"        
+        global gdExpp "C:/Users/wb594719/OneDrive - WBG/Indonesia/Monitoring/Measurement/FY23-2017-IPL-Deflation/Data/susenas-pipeline-exppl"    
     }
 else if ("`suser'" == "WB594719") & (`serv' ==0) {
 	local ldLocal "D:/wb594719/IDN-2017PPP"

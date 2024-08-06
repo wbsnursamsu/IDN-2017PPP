@@ -6,12 +6,12 @@ set trace off
 
 forval t=2010/2022 {
 
-    **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
+    **# /* TO BE USED FOR MEASUREMENT - FOOD, FUEL, ENERGY, RENT - URBAN PRICE REFERENCE */
     
-        use "${gdTemp}/temp-susenas-`t'.dta", clear
-		drop if inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
-        replace uv_hh = p_ps
-		
+        use "${gdTemp}/temp-susenas-`t'.dta", clear        
+        keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
+		replace uv_hh = prent if inlist(ditem_all,"rent")
+        		
         fillin code urban prov rege
 		drop _fillin
 		
@@ -34,9 +34,10 @@ forval t=2010/2022 {
             tempfile uv4
             save `uv4', replace
         restore, preserve
-            collapse (median) uv_5=uv_hh [w=popw], by(code)                     // national - REFERENCE
+            collapse (median) uv_5=uv_hh [w=popw], by(code)            
+               // national (REFERENCE)
             tempfile uv5
-            save `uv5', replace
+            save `uv5', replace 
         restore
       
         merge m:1 code urban prov rege using `uv1', nogen
@@ -46,21 +47,16 @@ forval t=2010/2022 {
         merge m:1 code using `uv5', nogen
                     
         // replace if missing UVs to higher stratification
-        forval j=2/5 {
-            replace uv_1 = uv_`j' if uv_1==.
-            }
         forval j=1/5 {
             replace uv_hh = uv_`j' if uv_hh==.
             }
-      
+        
 		// keeping only purchased food items at municipality, strata and national level 
 		keep if uv_hh!=. & uv_1!=. & uv_5!=. 
 		
 		/* drop if  less than 5 items purchased, by municipality)*/
 		egen fr = count(_n), by(code urban prov rege) 
-		drop if fr<5 | fr==.		
-		/* replacing  the outlier unit values - 5 times > or < than national unit value */
-		replace uv_1 = uv_5  if (uv_1 > 5*uv_5 | uv_1 <uv_5/5)  
+		drop if fr<5 | fr==.	
       
         /* weights by household */
         bys hhid: egen t_v = total(v)
@@ -78,6 +74,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-4.dta", replace
+		save "${gdOutput}/spdef-med-hh-`t'.dta", replace
 
     }

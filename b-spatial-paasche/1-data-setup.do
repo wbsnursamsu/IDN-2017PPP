@@ -161,4 +161,43 @@ foreach t in 2013 2014 {
     save "${gdTemp}/temp-susenas-`t'.dta", replace
 }
 
+    *=== 2002 - 2009 & 2023 DATA ONLY FOR OFFICIAL DEFLATOR ===*
+foreach t in 2002 2003 2004 2005 2006 2007 2008 2009 2023 {
+	use "${gdCons}/sus-cm-mar-`t'-full.dta", clear
+    keep urut year provcode kabcode urban kode ditem_all q v c weind wert
+   	drop if missing(urut)
+
+   /* rent price */
+    merge 1:1 urut kode using "${gdTemp}/rent-predict-`t'-3.dta", nogen keepusing(rent prent hstat)
+    destring kode, replace
+    
+    
+    * replace unit to 1 (unit has wrong entry as housing status)
+        replace q = 1 if ditem_all=="rent"      // assuming all housing quantity is 1
+           
+    * ------------------------------------------------------------------- *
+   
+    g hhid = urut
+    g prov = provcode
+    g rege = kabcode
+    g popw = wert
+    g p_ps = .               // price from price survey (NONE)
+   
+	unique hhid 				
+
+		g code = kode
+		 
+	* some screening about duration and food items consumed !!!!!!!	
+		clonevar  qpurch = q     // quantity of purchase
+		clonevar  epurch = v     // expenditure of purchase
+
+		// purchased food table
+		g purch =(v > 0 & v !=.) 
+		keep if purch == 1
+		//unit values for purchased food (hh level)		
+		g uv_hh = epurch/qpurch 
+
+    save "${gdTemp}/temp-susenas-`t'.dta", replace
+}    
+    
 beep

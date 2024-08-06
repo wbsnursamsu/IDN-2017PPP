@@ -1,0 +1,78 @@
+	*----------------------------------------------------------------------*
+	* TEMPORAL DEFLATOR  -  LASPEYRES
+	*----------------------------------------------------------------------*
+
+    /* Calculate weights */
+    
+* Select categories
+    use "${gdCons}/sus-cm-mar-2017-full.dta", replace
+    merge m:1 code17 using "${gdTemp}/inclusion-item-temporal.dta", nogen
+    
+    drop if include==.
+    drop include
+    
+    *!!! Drop VEHICLE (DURABLE should be dropped too) code 342 !!!*
+    drop if code17==342
+    
+    g hhid = urut
+    g prov = provcode
+    g rege= kabcode
+    g popw = wert
+    
+* 1. population weights for province
+    preserve
+        duplicates drop urut, force
+        gen population = 1 
+        collapse (sum) population [fw=int(weind)], by(prov urban)
+        rename prov provcode
+        save "${gdTemp}/temp-prov-weights-2017.dta", replace
+    restore
+    
+    save "${gdTemp}/sus-cm-for-temporal.dta", replace
+
+* 2. Calculate weights (plutocratic)    
+    use "${gdTemp}/sus-cm-for-temporal.dta", clear 
+    collapse (sum) v [weight = popw], by(code17)
+    egen t_v = total(v)
+    gen shv = v/t_v
+    replace shv = 0 if shv==.
+    save "${gdTemp}/temp-weight-2017.dta", replace
+
+    /* Calculate laspeyres */
+    
+* 3. price data
+    use "${gdOutput}/price-data-temp-2010-2022.dta", clear
+    gen p_ps=p_3
+    replace p_ps=0 if p_ps==.
+    merge m:1 code17 using "${gdTemp}/inclusion-item-temporal.dta", nogen
+    drop if include==.
+    drop include
+        * merge weights
+        merge m:1 prov urban using "${gdTemp}/temp-prov-weights-2017.dta", nogen    
+    save "${gdTemp}/price-for-temporal.dta", replace
+    
+    * 3a. price
+    use "${gdTemp}/price-for-temporal.dta", clear
+    preserve
+        keep if year==2017
+        collapse (mean) p_ps [fw=population], by(code17)
+        rename p_ps p0
+        tempfile urprice
+        save `urprice', replace
+    restore
+    
+    merge m:1 code17 using `urprice', keepusing(p0) nogen
+    merge m:1 code17 using "${gdTemp}/temp-weight-2017.dta", keepusing(shv) nogen    
+//     * replace outliers (??? NEED TO CHECK ???)
+//     replace p_ps = p0_ur if p_ps<(p0_ur/5) | p_ps>(p0_ur*5)
+    
+    collapse (mean) p_ps p0 shv [fw=population], by(year code17)
+    rename p_ps pt
+    
+    gen ldef_ur = pt/p0*shv
+    collapse (sum) ldef, by(year)
+    
+    /* SAVE */
+    save "${gdOutput}/temporal-deflator-all.dta", replace
+    
+    

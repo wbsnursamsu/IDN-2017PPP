@@ -26,7 +26,6 @@ forval t=2010/2022 {
         preserve
             keep komoditas`t' komoditas_all code06 name06 code17 name17
             rename komoditas`t' komoditas
-            drop if missing(komoditas)
             rename code06 code_c
             rename name06 name_c
             save "${gdTemp}\shkp-concordance-`t'.dta", replace
@@ -36,7 +35,6 @@ forval t=2010/2022 {
         preserve
             keep komoditas`t' komoditas_all code15 name15 code17 name17
             rename komoditas`t' komoditas
-            drop if missing(komoditas)
             rename code15 code_c
             rename name15 name_c
             save "${gdTemp}\shkp-concordance-`t'.dta", replace
@@ -46,7 +44,6 @@ forval t=2010/2022 {
         preserve 
             keep komoditas`t' komoditas_all code17 name17
             rename komoditas`t' komoditas
-            drop if missing(komoditas)
             gen code_c = code17
             gen name_c = name17
             save "${gdTemp}\shkp-concordance-`t'.dta", replace
@@ -56,7 +53,6 @@ forval t=2010/2022 {
         preserve
             keep komoditas`t' komoditas_all code18 name18 code17 name17
             rename komoditas`t' komoditas
-            drop if missing(komoditas)
             rename code18 code_c
             rename name18 name_c
             save "${gdTemp}\shkp-concordance-`t'.dta", replace
@@ -66,7 +62,6 @@ forval t=2010/2022 {
         preserve 
             keep komoditas`t' komoditas_all code22 name22 code17 name17
             rename komoditas`t' komoditas
-            drop if missing(komoditas)
             rename code22 code_c
             rename name22 name_c
             save "${gdTemp}\shkp-concordance-`t'.dta", replace

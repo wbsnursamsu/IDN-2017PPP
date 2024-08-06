@@ -4,12 +4,14 @@
 clear all
 set trace off
 
-forval t=2010/2022 {
+forval t=2022/2022 {
 
     **# /* MIX HH IMPLICIT PRICE AND PRICE SURVEY WITH RENT PRICE */
     
         use "${gdTemp}/temp-susenas-`t'.dta", clear
-		keep if inlist(ditem_all,"food","processed","tobacco","energy","fuel")
+        
+        replace uv_hh = p_ps if !inlist(ditem_all,"food","processed","tobacco","energy","fuel","rent")
+		replace uv_hh = prent if inlist(ditem_all,"rent")
         
         fillin code urban prov rege
 		drop _fillin
@@ -32,8 +34,9 @@ forval t=2010/2022 {
             collapse (median) uv_4=uv_hh [w=popw], by(code urban)               // urban rural
             tempfile uv4
             save `uv4', replace
-        restore, preserve
-            collapse (median) uv_5=uv_hh [w=popw], by(code)                     // national - REFERENCE
+            drop if urban==0
+            drop urban
+            rename uv_4 uv_5                                                    // REFERENCE PRICE using Urban price
             tempfile uv5
             save `uv5', replace
         restore
@@ -77,6 +80,6 @@ forval t=2010/2022 {
         
 		***!!! SAVE !!!***
 		compress 
-		save "${gdOutput}/spdef-med-hh-`t'-3.dta", replace
+		save "${gdOutput}/spdef-med-hh-`t'-all-comp.dta", replace
 
     }
