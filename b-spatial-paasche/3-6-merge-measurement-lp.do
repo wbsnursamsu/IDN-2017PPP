@@ -21,16 +21,16 @@ save "${gdOutput}/01-spdef-hh-lp-2018-2023.dta", replace
 
 /* Stratum */    
 use "${gdOutput}/01-spdef-hh-lp-2018-2023.dta", clear
-collapse (median) pdef [weight = popw] , by(prov urban year) 
-replace pdef=1 if pdef==.
-la var pdef "Spatial deflator"
+collapse (median) ldef [weight = popw] , by(prov urban year) 
+replace ldef=1 if ldef==.
+la var ldef "Laspeyres Spatial deflator"
 save "${gdOutput}/02-spdef-str-2018-2023-lp.dta", replace 
 
 /* Regency */    
 use "${gdOutput}/01-spdef-hh-lp-2018-2023.dta", clear    
-collapse (median) pdef [weight = popw] , by(prov rege year) 
-replace pdef=1 if pdef==.
-la var pdef "Spatial deflator"
+collapse (median) ldef [weight = popw] , by(prov rege year) 
+replace ldef=1 if ldef==.
+la var ldef "Laspeyres Spatial deflator"
 save "${gdOutput}/02-spdef-rgc-2018-2023-lp.dta", replace 
 
 *add 2013 & 2014 	
